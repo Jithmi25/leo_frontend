@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { router } from 'expo-router';
 import {
   Dimensions,
   FlatList,
@@ -212,9 +213,21 @@ export default function OnboardingScreening() {
               </TouchableOpacity>
             </>
           ) : (
-            <TouchableOpacity onPress={() => { /* TODO: navigate to main app / auth */ }} style={styles.primaryButton}>
-              <Text style={styles.primaryButtonText}>Get Started</Text>
-            </TouchableOpacity>
+            // <TouchableOpacity onPress={() => { /* TODO: navigate to main app / auth */ }} style={styles.primaryButton}>
+            //   <Text style={styles.primaryButtonText}>Get Started</Text>
+            // </TouchableOpacity>
+
+<TouchableOpacity 
+  onPress={() => router.replace('../signup')} 
+  style={styles.primaryButton}
+>
+  <Text style={styles.primaryButtonText}>Get Started</Text>
+</TouchableOpacity>
+
+
+
+
+
           )}
         </View>
       </View>
