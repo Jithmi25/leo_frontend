@@ -15,7 +15,9 @@ import {
 } from 'react-native';
 import { Search, Plus, Home, ShoppingBag, Award, Bell, Calendar } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router'; // Add this import for navigation
 import PostCard from '@/components/PostCard';
+import BottomNav from '@/components/BottomNav';
 import CommentsSheet from '@/components/CommentsSheet';
 
 const COLORS = {
@@ -29,6 +31,10 @@ const COLORS = {
   gradientStart: '#1C1C1C',
   gradientEnd: '#8B7355',
 };
+
+// --- FIX: Define the required type for the active tab state ---
+type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
+// ---------------------------------------------------------------
 
 interface Post {
   postId: string;
@@ -70,11 +76,17 @@ interface Style {
   navLabel: TextStyle;
   navLabelActive: TextStyle;
 }
+
 const logoImage = require('../../assets/images/logo.png');
+
 const NationalFeed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('home');
+  
+  // --- FIX: Change the state type from string to TabName ---
+  const [activeTab, setActiveTab] = useState<TabName>('home');
+  // ---------------------------------------------------------
+  
   const [commentsVisible, setCommentsVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string>('');
 
@@ -127,25 +139,7 @@ const NationalFeed: React.FC = () => {
     console.log(`Bookmark post ${postId}`);
   };
 
-  const renderNavItem = (
-    icon: React.ReactNode,
-    label: string,
-    tabName: string
-  ) => {
-    const isActive = activeTab === tabName;
-    return (
-      <TouchableOpacity
-        style={[styles.navItem, isActive && styles.navItemActive]}
-        onPress={() => setActiveTab(tabName)}
-        activeOpacity={0.7}
-      >
-        {icon}
-        <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
-          {label}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  // Removed renderNavItem as it's no longer needed (BottomNav handles it)
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -154,8 +148,6 @@ const NationalFeed: React.FC = () => {
         <View style={styles.header}>
           <View style={styles.logoContainer}>
             <Image
-              
-
               source={logoImage} 
               style={styles.logo}
               resizeMode="contain"
@@ -259,56 +251,13 @@ const NationalFeed: React.FC = () => {
           }
         />
 
-        <View style={styles.bottomNav}>
-          {renderNavItem(
-            <Home
-              color={activeTab === 'home' ? COLORS.goldAccent : COLORS.greyText}
-              size={24}
-            />,
-            'Home',
-            'home'
-          )}
-          {renderNavItem(
-            <ShoppingBag
-              color={activeTab === 'shop' ? COLORS.goldAccent : COLORS.greyText}
-              size={24}
-            />,
-            'Shop',
-            'shop'
-          )}
-          {renderNavItem(
-            <Award
-              color={
-                activeTab === 'leaderboard' ? COLORS.goldAccent : COLORS.greyText
-              }
-              size={24}
-            />,
-            'Leaderboard',
-            'leaderboard'
-          )}
-          {renderNavItem(
-            <Bell
-              color={
-                activeTab === 'notifications'
-                  ? COLORS.goldAccent
-                  : COLORS.greyText
-              }
-              size={24}
-            />,
-            'Notifications',
-            'notifications'
-          )}
-          {renderNavItem(
-            <Calendar
-              color={
-                activeTab === 'events' ? COLORS.goldAccent : COLORS.greyText
-              }
-              size={24}
-            />,
-            'Events',
-            'events'
-          )}
-        </View>
+        <BottomNav
+          activeTab={activeTab}
+          onTabPress={(path: string, tab: TabName) => { // Explicit types added
+            setActiveTab(tab);
+            router.replace(path as any); // Cast to any to fix type error
+          }}
+        />
       </View>
     </SafeAreaView>
   );
@@ -426,43 +375,24 @@ const styles = StyleSheet.create<Style>({
     flex: 1,
     backgroundColor: '#F8F8F8',
   },
-
+  
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.lightGrey,
-    elevation: 8,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
   navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    minWidth: 60,
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
   navItemActive: {
-    borderBottomWidth: 0,
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
   navIcon: {
-    marginBottom: 4,
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
   navLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: COLORS.greyText,
-    marginTop: 4,
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
   navLabelActive: {
-    color: COLORS.goldAccent,
-    fontWeight: '600',
+    // These styles are commented out because they are now defined in BottomNav.tsx
   },
 } as const);
 
