@@ -14,7 +14,9 @@ import {
   StatusBar,
 } from 'react-native';
 import { Search, Plus, Home, ShoppingBag, Award, Bell, Calendar } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import PostCard from '@/components/PostCard';
+import CommentsSheet from '@/components/CommentsSheet';
 
 const COLORS = {
   black: '#000000',
@@ -68,11 +70,13 @@ interface Style {
   navLabel: TextStyle;
   navLabelActive: TextStyle;
 }
-
+const logoImage = require('../../assets/images/logo.png');
 const NationalFeed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('home');
+  const [commentsVisible, setCommentsVisible] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string>('');
 
   useEffect(() => {
     const mockPosts: Post[] = [
@@ -111,7 +115,8 @@ const NationalFeed: React.FC = () => {
   }, []);
 
   const handleCommentPress = (postId: string) => {
-    console.log(`Navigate to comments for post ${postId}`);
+    setSelectedPostId(postId);
+    setCommentsVisible(true);
   };
 
   const handleSharePress = (postId: string) => {
@@ -149,9 +154,9 @@ const NationalFeed: React.FC = () => {
         <View style={styles.header}>
           <View style={styles.logoContainer}>
             <Image
-              source={{
-                uri: 'https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-              }}
+              
+
+              source={logoImage} 
               style={styles.logo}
               resizeMode="contain"
             />
@@ -172,7 +177,12 @@ const NationalFeed: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.clubsContainer}>
+        <LinearGradient
+          colors={['#1C1C1C', '#3D2817'] as const}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.clubsContainer}
+        >
           <View style={styles.clubsRow}>
             <TouchableOpacity style={styles.addButton} activeOpacity={0.7}>
               <Plus color={COLORS.white} size={24} />
@@ -198,7 +208,7 @@ const NationalFeed: React.FC = () => {
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </LinearGradient>
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
@@ -239,6 +249,15 @@ const NationalFeed: React.FC = () => {
             />
           ))}
         </ScrollView>
+
+        <CommentsSheet
+          visible={commentsVisible}
+          onClose={() => setCommentsVisible(false)}
+          postId={selectedPostId}
+          totalComments={
+            posts.find((p) => p.postId === selectedPostId)?.comments || 0
+          }
+        />
 
         <View style={styles.bottomNav}>
           {renderNavItem(

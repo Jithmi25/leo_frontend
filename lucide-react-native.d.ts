@@ -263,4 +263,7 @@ declare module 'lucide-react-native' {
   export const Youtube: Icon;
   export const Zap: Icon;
   export const ZapOff: Icon;
+  export const Crown: Icon;
+  export const LockClosed: Icon;
+  export const LockOpen: Icon;
 }

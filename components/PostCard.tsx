@@ -72,6 +72,7 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const defaultAvatar = 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1';
   const defaultMedia = 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800';
@@ -114,10 +115,17 @@ const PostCard: React.FC<PostCardProps> = ({
 
         <TouchableOpacity
           style={styles.bookmarkButton}
-          onPress={() => onBookmarkPress && onBookmarkPress(postId)}
+          onPress={() => {
+            setIsBookmarked((prev) => !prev);
+            onBookmarkPress && onBookmarkPress(postId);
+          }}
           activeOpacity={0.7}
         >
-          <Bookmark color={COLORS.greyText} size={20} />
+          <Bookmark
+            color={isBookmarked ? COLORS.goldAccent : COLORS.greyText}
+            size={20}
+            fill={isBookmarked ? COLORS.goldAccent : 'none'}
+          />
         </TouchableOpacity>
       </View>
 
