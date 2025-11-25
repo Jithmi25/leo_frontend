@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
 import {
     View,
@@ -13,6 +13,21 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
+// Assuming BottomNav is imported from its location (e.g., './BottomNav')
+// NOTE: You must replace './BottomNav' with the actual path to your BottomNav file.
+import BottomNav from '@/components/BottomNav'; 
+
+// --- START: Types and Constants copied from BottomNav for compilation ---
+type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
+const EXPO_ROUTER_PATHS: Record<TabName, string> = {
+    home: '/Feeds/NationalFeed',
+    shop: '/customScreens/Marketplace', // Using the path from the old nav
+    leaderboard: '/LeaderboardScreen', // Assuming this is the current screen's path
+    notifications: '/Feeds/Notification',
+    events: '/Events/UpcomingEvent',
+};
+// --- END: Types and Constants ---
+
 const COLORS = {
     black: '#000000',
     white: '#FFFFFF',
@@ -21,6 +36,8 @@ const COLORS = {
     darkText: '#000000',
     greyText: '#999999',
     lightGrey: '#F0F0F0',
+    // Aligning goldAccent from BottomNav for the active state indicator color
+    goldAccent: '#FFC80A',
 };
 
 interface TopClub {
@@ -55,6 +72,20 @@ const CLUBS_DATA: Club[] = [
 ];
 
 export default function LeaderboardScreen() {
+    // 1. State for active tab, defaulting to 'leaderboard'
+    const [activeTab, setActiveTab] = useState<TabName>('leaderboard');
+
+    // 2. Tab Press Handler: Navigates using Expo Router and updates the state
+    const handleTabPress = (path: string, tab: TabName) => {
+        // Find the correct path based on the tab name (using a defined map)
+        const navigationPath = EXPO_ROUTER_PATHS[tab];
+
+        if (navigationPath && tab !== activeTab) {
+            router.replace(navigationPath);
+        }
+        setActiveTab(tab);
+    };
+    
     const renderClubItem = ({ item }: { item: Club }) => (
         <View style={styles.clubRow}>
             <View style={styles.rankBadge}>
@@ -134,35 +165,12 @@ export default function LeaderboardScreen() {
                 />
             </View>
 
-            {/* Bottom Navigation */}
-            <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navItem}>
-                    <Ionicons name="home-outline" size={24} color={COLORS.darkText} />
-                    <Text style={styles.navText}>Home</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.navItem}
-                    onPress={() => router.push('/customScreens/Marketplace')}
-                >
-                    <Ionicons name="bag-outline" size={24} color={COLORS.darkText} />
-                    <Text style={styles.navText}>Shop</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-                    <Ionicons name="trophy" size={24} color={COLORS.goldMid} />
-                    <Text style={[styles.navText, styles.navTextActive]}>Leaderboard</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.navItem}>
-                    <Ionicons name="notifications-outline" size={24} color={COLORS.darkText} />
-                    <Text style={styles.navText}>Notifications</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.navItem}>
-                    <Ionicons name="calendar-outline" size={24} color={COLORS.darkText} />
-                    <Text style={styles.navText}>Events</Text>
-                </TouchableOpacity>
+            {/* 3. Integrated BottomNav */}
+            <View style={styles.bottomNavContainer}>
+                <BottomNav 
+                    activeTab={activeTab} 
+                    onTabPress={handleTabPress} 
+                />
             </View>
         </View>
     );
@@ -247,7 +255,8 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 30,
         marginTop: -20,
         paddingTop: 20,
-        paddingBottom: 80,
+        // Reduced bottom padding to account for the new fixed BottomNav
+        paddingBottom: 100, 
     },
     listContent: {
         paddingHorizontal: 20,
@@ -286,40 +295,13 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
     },
-    bottomNav: {
+    // 4. ADDED: New container to position the BottomNav
+    bottomNavContainer: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        backgroundColor: COLORS.white,
-        paddingVertical: 12,
-        paddingBottom: 20,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E5E5',
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 8,
     },
-    navItem: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 4,
-    },
-    navItemActive: {
-        // Active state
-    },
-    navText: {
-        fontSize: 11,
-        color: COLORS.darkText,
-        marginTop: 4,
-    },
-    navTextActive: {
-        color: COLORS.goldMid,
-        fontWeight: '600',
-    },
+    // REMOVED all original bottomNav styles (bottomNav, navItem, navItemActive, navText, navTextActive)
+    // as they are now defined within the imported BottomNav component.
 });
