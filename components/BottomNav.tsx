@@ -18,11 +18,11 @@ type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
 
 // Define tabs with updated paths to match your Expo Router routes
 const tabs = [
-  { name: 'Home', tab: 'home' as TabName, Icon: Home, path: '/home' },
-  { name: 'Shop', tab: 'shop' as TabName, Icon: ShoppingBag, path: '/app/shop' },
-  { name: 'Leaderboard', tab: 'leaderboard' as TabName, Icon: Award, path: '/app/LeaderBoard' },
-  { name: 'Notifications', tab: 'notifications' as TabName, Icon: Bell, path: '/app/Feed/Notification' },
-  { name: 'Events', tab: 'events' as TabName, Icon: Calendar, path: '/app/Events/Event' },
+  { name: 'Home', tab: 'home' as TabName, Icon: Home, path: '/Feeds/NationalFeed' },
+  { name: 'Shop', tab: 'shop' as TabName, Icon: ShoppingBag, path: '/Feeds/NationalFeed' }, // Placeholder
+  { name: 'Leaderboard', tab: 'leaderboard' as TabName, Icon: Award, path: '/Feeds/NationalFeed' }, // Placeholder
+  { name: 'Notifications', tab: 'notifications' as TabName, Icon: Bell, path: '/Feeds/Notification' },
+  { name: 'Events', tab: 'events' as TabName, Icon: Calendar, path: '/Events/UpcomingEvent' },
 ];
 
 interface BottomNavProps {

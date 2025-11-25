@@ -134,10 +134,10 @@ export default function UpcomingEvent() {
           <TouchableOpacity style={styles.tabActive}>
             <Text style={styles.tabTextActive}>Upcoming</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/app/Events/PastEvent' as any)}>
+          <TouchableOpacity onPress={() => router.push('/Events/PastEvent' as any)}>
             <Text style={styles.tabText}>Past</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/app/Events/MyEvent' as any)}>
+          <TouchableOpacity onPress={() => router.push('/Events/MyEvent' as any)}>
             <Text style={styles.tabText}>My Event</Text>
           </TouchableOpacity>
         </View>

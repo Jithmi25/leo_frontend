@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { router } from 'expo-router';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
   StatusBar,
-  ViewStyle, 
+  ViewStyle,
   TextStyle,
   ImageStyle,
 } from 'react-native';
@@ -15,7 +15,7 @@ import {
 
 // Asset Imports
 // Assuming GreenTick.png is a static local asset
-const greenTickIcon = require('../../assets/GreenTick.png'); 
+const greenTickIcon = require('../../assets/GreenTick.png');
 
 // --- Color Constants ---
 const COLORS = {
@@ -47,8 +47,8 @@ const SuccessScreen = ({ /* navigateToHome */ }: SuccessScreenProps): React.JSX.
   // Simulate automatic navigation after a delay
   useEffect(() => {
     const timer = setTimeout(() => {
-     router.replace('../Feeds/NationalFeed'); // Navigate to Profile screen after delay
-      
+      router.replace('/Feeds/NationalFeed'); // Navigate to Profile screen after delay
+
     }, 3000); // 3 seconds delay
 
     return () => clearTimeout(timer); // Cleanup the timer
@@ -62,14 +62,14 @@ const SuccessScreen = ({ /* navigateToHome */ }: SuccessScreenProps): React.JSX.
 
       {/* Main Content Area */}
       <View style={styles.content}>
-        
+
         {/* Verification Icon */}
-        <Image 
-          source={greenTickIcon} 
-          style={styles.tickIcon} 
-          resizeMode="contain" 
+        <Image
+          source={greenTickIcon}
+          style={styles.tickIcon}
+          resizeMode="contain"
         />
-        
+
         {/* Header Text */}
         <Text style={styles.headerMain}>
           Google Sign-In Verified
@@ -79,7 +79,7 @@ const SuccessScreen = ({ /* navigateToHome */ }: SuccessScreenProps): React.JSX.
         </Text>
 
       </View>
-      
+
       {/* Footer Text for Security */}
       <Text style={styles.footerText}>
         Your account is protected by {'\n'}Google authentication.

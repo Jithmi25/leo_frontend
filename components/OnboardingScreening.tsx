@@ -44,10 +44,10 @@ const getDeviceHeight = () => Dimensions.get('window').height;
 const OnboardingItem = ({ item, width }: { item: OnboardingData; width: number }) => {
   return (
     <View style={[styles.slide, { width }]}>
-      <Image 
-        source={item.image} 
-        style={[styles.image, { width: width * 0.8, height: getDeviceHeight() * 0.4 }]} 
-        resizeMode="contain" 
+      <Image
+        source={item.image}
+        style={[styles.image, { width: width * 0.8, height: getDeviceHeight() * 0.4 }]}
+        resizeMode="contain"
       />
       <View style={styles.textContainer}>
         <Text style={styles.text}>{item.text}</Text>
@@ -117,7 +117,7 @@ export default function OnboardingScreening() {
       setTimeout(() => {
         try {
           slidesRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0 });
-        } catch {}
+        } catch { }
       }, 200);
     }
   }, [layoutWidth]);
@@ -139,13 +139,13 @@ export default function OnboardingScreening() {
   };
 
   return (
-    <SafeAreaView 
-      style={styles.container} 
+    <SafeAreaView
+      style={styles.container}
       onLayout={(e) => setLayoutWidth(Math.round(e.nativeEvent.layout.width))}
     >
       <View style={styles.header} />
 
-      
+
 
       {ready && (
         <FlatList
@@ -168,8 +168,8 @@ export default function OnboardingScreening() {
           viewabilityConfig={viewabilityConfig}
           onMomentumScrollEnd={onMomentumScrollEnd}
           onScrollToIndexFailed={onScrollToIndexFailed}
-          initialNumToRender={SLIDES.length} 
-          windowSize={SLIDES.length + 2} 
+          initialNumToRender={SLIDES.length}
+          windowSize={SLIDES.length + 2}
           scrollEventThrottle={16}
         />
       )}
@@ -180,10 +180,10 @@ export default function OnboardingScreening() {
           {SLIDES.map((_, i) => {
             const isActive = i === currentIndex;
             return (
-              <TouchableOpacity 
-                key={i.toString()} 
-                onPress={() => scrollTo(i)} 
-                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} 
+              <TouchableOpacity
+                key={i.toString()}
+                onPress={() => scrollTo(i)}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                 style={{ padding: 10 }}
               >
                 <View
@@ -217,12 +217,12 @@ export default function OnboardingScreening() {
             //   <Text style={styles.primaryButtonText}>Get Started</Text>
             // </TouchableOpacity>
 
-<TouchableOpacity 
-  onPress={() => router.replace('../signup')} 
-  style={styles.primaryButton}
->
-  <Text style={styles.primaryButtonText}>Get Started</Text>
-</TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.replace('/Signup')}
+              style={styles.primaryButton}
+            >
+              <Text style={styles.primaryButtonText}>Get Started</Text>
+            </TouchableOpacity>
 
 
 

@@ -57,8 +57,9 @@ export default function MyEvent() {
   const [selectedDate, setSelectedDate] = useState(21);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleTabPress = (path: string) => {
-    router.push(path);
+  // Updated to match BottomNav's onTabPress signature
+  const handleTabPress = (path: string, tab: any) => {
+    router.push(path as any);
   };
 
   return (
@@ -127,10 +128,10 @@ export default function MyEvent() {
         </View>
 
         <View style={styles.tabSelector}>
-          <TouchableOpacity onPress={() => router.push('/app/Events/UpcomingEvent')}>
+          <TouchableOpacity onPress={() => router.push('/Events/UpcomingEvent' as any)}>
             <Text style={styles.tabText}>Upcoming</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/app/Events/PastEvent')}>
+          <TouchableOpacity onPress={() => router.push('/Events/PastEvent' as any)}>
             <Text style={styles.tabText}>Past</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabActive}>
@@ -278,4 +279,3 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 });
-    

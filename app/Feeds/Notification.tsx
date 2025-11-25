@@ -1,44 +1,49 @@
-import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Menu, Bell, Home, User, Check, Info, Award, Clock } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, Check, Info, Award, Clock } from 'lucide-react-native';
+import BottomNav from '@/components/BottomNav';
 
-// --- TYPE DEFINITIONS ---
-const ACCENT_COLOR = 'bg-yellow-500';
-const ACCENT_TEXT = 'text-yellow-500';
-const PRIMARY_TEXT = 'text-gray-800';
-const SECONDARY_TEXT = 'text-gray-500';
+const COLORS = {
+  white: '#FFFFFF',
+  black: '#000000',
+  goldAccent: '#FFC80A',
+  greyText: '#707070',
+  lightGrey: '#EAEAEA',
+  red: '#FF3B30',
+  green: '#4CAF50',
+  blue: '#2196F3',
+};
 
-// Define a TypeScript type for the notification type strings
 type NotificationType = 'success' | 'info' | 'badge' | 'reminder';
 
-// Define the interface for a Notification Item
 interface NotificationItem {
   id: string;
   type: NotificationType;
   title: string;
   content: string;
-  description?: string;
   timestamp: Date;
   isRead: boolean;
 }
 
-// --- UTILITY FUNCTIONS ---
-
-/**
- * Metadata for icons/emojis
- */
 const getNotificationMetadata = (type: NotificationType) => {
   switch (type) {
-    case 'success': return { icon: Check, color: 'text-green-600', title: 'Success' };
-    case 'info': return { icon: Info, color: 'text-blue-600', title: 'Information' };
-    case 'badge': return { icon: Award, color: 'text-yellow-600', title: 'Achievement' };
-    case 'reminder': return { icon: Clock, color: 'text-red-600', title: 'Reminder' };
-    default: return { icon: Info, color: 'text-gray-600', title: 'Notification' };
+    case 'success': return { icon: Check, color: COLORS.green };
+    case 'info': return { icon: Info, color: COLORS.blue };
+    case 'badge': return { icon: Award, color: COLORS.goldAccent };
+    case 'reminder': return { icon: Clock, color: COLORS.red };
+    default: return { icon: Info, color: COLORS.greyText };
   }
 };
 
-/**
- * Formats a Date object into a time ago string.
- */
 const formatTimeAgo = (date: Date) => {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
   let interval = seconds / 31536000;
@@ -55,79 +60,15 @@ const formatTimeAgo = (date: Date) => {
   return "just now";
 };
 
-// --- COMPONENTS ---
-
-interface NotificationCardProps {
-  notification: NotificationItem;
-  onPress: (id: string) => void;
-}
-
-const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onPress }) => {
-  // Robust check: Ensure notification is valid
-  if (!notification || !notification.id) {
-    console.warn("⚠️ NotificationCard received invalid or incomplete notification:", notification);
-    return null;
-  }
-
-  const { id, title, content, type, isRead, timestamp } = notification;
-  const { icon: Icon, color } = getNotificationMetadata(type);
-  const timeAgo = formatTimeAgo(new Date(timestamp));
-
-  // The card style depends on the read status
-  const cardClasses = `
-    transition-all duration-300 ease-in-out
-    p-4 md:p-6 mb-4 rounded-xl border-b-2
-    shadow-lg cursor-pointer
-    hover:shadow-xl hover:scale-[1.01]
-    ${isRead ? 'bg-white opacity-70 border-gray-100' : 'bg-white opacity-100 border-yellow-500 shadow-yellow-100/50'}
-  `;
-
-  return (
-    <div
-      className={cardClasses}
-      onClick={() => onPress(id)}
-    >
-      <div className="flex justify-between items-start">
-        {/* Left Side: Icon and Title */}
-        <div className="flex items-center min-w-0 flex-1">
-          <Icon className={`w-6 h-6 mr-3 ${color}`} />
-
-          <p className={`text-base font-semibold truncate ${PRIMARY_TEXT}`}>
-            {title}
-          </p>
-        </div>
-
-        {/* Right Side: Unread Dot and Time */}
-        <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
-          {!isRead && (
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-          )}
-          <p className={`text-xs ${SECONDARY_TEXT}`}>
-            {timeAgo}
-          </p>
-        </div>
-      </div>
-
-      {/* Content Preview */}
-      <p className={`mt-2 text-sm ${SECONDARY_TEXT}`}>
-        {content}
-      </p>
-    </div>
-  );
-};
-
-// --- MAIN APPLICATION COMPONENT (NotificationScreen) ---
-
-const App = () => {
-  // Mock data for testing
+export default function NotificationScreen() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: '1',
       type: 'success',
       title: 'Transfer Complete!',
       content: 'Your recent payment of $450 to Jane Doe has been processed.',
-      description: 'Transaction confirmation.',
-      timestamp: new Date(Date.now() - 30000), // 30 seconds ago
+      timestamp: new Date(Date.now() - 30000),
       isRead: false,
     },
     {
@@ -135,8 +76,7 @@ const App = () => {
       type: 'reminder',
       title: 'Subscription Renewal Alert',
       content: 'Your premium membership is due for renewal tomorrow.',
-      description: 'Membership reminder.',
-      timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+      timestamp: new Date(Date.now() - 3600000),
       isRead: false,
     },
     {
@@ -144,106 +84,128 @@ const App = () => {
       type: 'badge',
       title: 'New Level Unlocked!',
       content: 'You reached Level 5! Claim your badge and reward now.',
-      description: 'Gaming achievement.',
-      timestamp: new Date(Date.now() - 86400000 * 2), // 2 days ago
-      isRead: true,
-    },
-    {
-      id: '4',
-      type: 'info',
-      title: 'Security Update Required',
-      content: 'We noticed a login from a new device. Please verify your account security.',
-      description: 'Security information.',
-      timestamp: new Date(Date.now() - 86400000 * 5), // 5 days ago
+      timestamp: new Date(Date.now() - 86400000 * 2),
       isRead: true,
     },
   ]);
 
-  const handleNotificationPress = useCallback((id: string) => {
-    console.log('Pressed notification with id:', id);
-    // Mark as read and update state
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
+  const handleTabPress = (path: string, tab: any) => {
+    router.push(path as any);
+  };
+
+  const renderItem = ({ item }: { item: NotificationItem }) => {
+    const { icon: Icon, color } = getNotificationMetadata(item.type);
+    return (
+      <TouchableOpacity
+        style={[styles.card, !item.isRead && styles.unreadCard]}
+        activeOpacity={0.7}
+      >
+        <View style={styles.cardHeader}>
+          <View style={styles.iconContainer}>
+            <Icon color={color} size={24} />
+            <Text style={styles.cardTitle}>{item.title}</Text>
+          </View>
+          <Text style={styles.timeText}>{formatTimeAgo(item.timestamp)}</Text>
+        </View>
+        <Text style={styles.cardContent}>{item.content}</Text>
+      </TouchableOpacity>
     );
-  }, []);
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
-  // --- Layout Components ---
-
-  const TopNavBar = () => (
-    <div className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md z-10 flex items-center justify-between px-4 sm:px-6 md:max-w-xl md:mx-auto">
-      <button className="p-2 rounded-full hover:bg-gray-100 transition">
-        <ArrowLeft className="w-6 h-6 text-gray-700" />
-      </button>
-
-      <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
-      <span className="relative">
-        <button className="p-2 rounded-full hover:bg-gray-100 transition">
-          <Menu className="w-6 h-6 text-gray-700" />
-        </button>
-        {unreadCount > 0 && (
-            <div className={`absolute top-0 right-0 -mt-1 -mr-1 w-5 h-5 flex items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white`}>
-                {unreadCount}
-            </div>
-        )}
-      </span>
-    </div>
-  );
-
-  const BottomMenuBar = () => (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 z-10 flex items-center justify-around md:max-w-xl md:mx-auto">
-      <NavItem icon={Home} label="Home" active={false} />
-      <NavItem icon={Bell} label="Alerts" active={true} count={unreadCount} />
-      <NavItem icon={User} label="Profile" active={false} />
-    </div>
-  );
-
-  const NavItem = ({ icon: Icon, label, active, count = 0 }: { icon: React.FC<any>, label: string, active: boolean, count?: number }) => (
-    <div className={`flex flex-col items-center p-2 transition-colors ${active ? ACCENT_TEXT : SECONDARY_TEXT} cursor-pointer`}>
-      <div className="relative">
-        <Icon className="w-6 h-6" />
-        {count > 0 && (
-            <div className="absolute top-0 right-0 -mt-1 -mr-1 w-3 h-3 rounded-full bg-red-600 border-2 border-white"></div>
-        )}
-      </div>
-      <span className="text-xs mt-1">{label}</span>
-    </div>
-  );
-
+  };
 
   return (
-    // Outer container to simulate the screen on web
-    <div className="min-h-screen bg-gray-50 flex justify-center font-sans">
-      
-      {/* Mobile Frame Container */}
-      <div className="w-full md:max-w-xl md:h-[90vh] md:my-6 md:rounded-3xl md:shadow-2xl bg-gray-100 flex flex-col relative overflow-hidden">
-        
-        {/* Top Navigation Bar */}
-        <TopNavBar />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <ArrowLeft color={COLORS.black} size={24} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Notifications</Text>
+          <View style={{ width: 24 }} />
+        </View>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto pt-20 pb-20 p-4 space-y-3">
-          {notifications
-            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()) // Sort by newest first
-            .map(notification => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-                onPress={handleNotificationPress}
-              />
-            ))}
-            
-            {notifications.length === 0 && (
-                <p className="text-center text-gray-500 mt-10">No new notifications.</p>
-            )}
-        </div>
+        <FlatList
+          data={notifications}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
 
-        {/* Bottom Menu Bar */}
-        <BottomMenuBar />
-      </div>
-    </div>
+        <BottomNav activeTab="notifications" onTabPress={handleTabPress} />
+      </View>
+    </SafeAreaView>
   );
-};
+}
 
-export default App;
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.lightGrey,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.black,
+  },
+  listContent: {
+    padding: 16,
+  },
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  unreadCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.goldAccent,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.black,
+    flex: 1,
+  },
+  timeText: {
+    fontSize: 12,
+    color: COLORS.greyText,
+  },
+  cardContent: {
+    fontSize: 14,
+    color: COLORS.greyText,
+    lineHeight: 20,
+    marginLeft: 32,
+  },
+});
