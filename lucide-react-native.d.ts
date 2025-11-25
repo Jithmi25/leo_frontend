@@ -266,4 +266,8 @@ declare module 'lucide-react-native' {
   export const Crown: Icon;
   export const LockClosed: Icon;
   export const LockOpen: Icon;
+  export const MagicWand: Icon;
+  export const Mailbox: Icon;
+  export const CalendarCheck: Icon;
+  export const UserCheck: Icon;
 }
