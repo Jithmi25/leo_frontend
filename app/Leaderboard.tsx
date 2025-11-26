@@ -21,8 +21,8 @@ import BottomNav from '@/components/BottomNav';
 type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
 const EXPO_ROUTER_PATHS: Record<TabName, string> = {
     home: '/Feeds/NationalFeed',
-    shop: '/customScreens/Marketplace', // Using the path from the old nav
-    leaderboard: '/LeaderboardScreen', // Assuming this is the current screen's path
+    shop: '/Shopping/Marketplace', // Updated to match BottomNav
+    leaderboard: '/customScreens/Leaderboard', // Fixed to match BottomNav path
     notifications: '/Feeds/Notification',
     events: '/Events/UpcomingEvent',
 };
@@ -81,7 +81,7 @@ export default function LeaderboardScreen() {
         const navigationPath = EXPO_ROUTER_PATHS[tab];
 
         if (navigationPath && tab !== activeTab) {
-            router.replace(navigationPath);
+            router.push(navigationPath as any); // Changed to push and cast to any to fix TypeScript error
         }
         setActiveTab(tab);
     };

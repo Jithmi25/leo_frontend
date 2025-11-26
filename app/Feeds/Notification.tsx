@@ -78,11 +78,8 @@ export default function NotificationsScreen() {
 
     // 2. Tab Press Handler: Navigates using Expo Router and updates the state
     const handleTabPress = (path: string, tab: TabName) => {
-        if (path) {
-            // Note: In a real app, you would use router.push(path) or router.replace(path)
-            // For now, we only log the path to avoid errors in this environment
-            console.log(`Navigating to ${path} on tab ${tab}`);
-            // router.replace(path); 
+        if (path && tab !== activeTab) {
+            router.push(path as any); // Enabled navigation with type casting to bypass Expo Router's strict typing
         }
         setActiveTab(tab);
     };

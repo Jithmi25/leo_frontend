@@ -255,7 +255,7 @@ const NationalFeed: React.FC = () => {
           activeTab={activeTab}
           onTabPress={(path: string, tab: TabName) => { // Explicit types added
             setActiveTab(tab);
-            router.replace(path as any); // Cast to any to fix type error
+            router.push(path as any); // Changed from replace to push for better navigation
           }}
         />
       </View>
