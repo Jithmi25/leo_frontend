@@ -21,7 +21,7 @@ const tabs = [
   { name: 'Home', tab: 'home' as TabName, Icon: Home, path: '/Feeds/NationalFeed' },
   { name: 'Shop', tab: 'shop' as TabName, Icon: ShoppingBag, path: '/Shopping/Marketplace' },
   { name: 'Leaderboard', tab: 'leaderboard' as TabName, Icon: Award, path: '/Leaderboard' }, // Updated to match your Marketplace code
-  { name: 'Notifications', tab: 'notifications' as TabName, Icon: Bell, path: '/Feeds/Notification' },
+  { name: 'Notifications', tab: 'notifications' as TabName, Icon: Bell, path: '/Notification' },
   { name: 'Events', tab: 'events' as TabName, Icon: Calendar, path: '/Events/UpcomingEvent' },
 ];
 
