@@ -119,51 +119,68 @@ export default function LeaderboardScreen() {
 
                 {/* Top 3 Podium */}
                 <View style={styles.podiumContainer}>
+
+
                     {/* Position 2 - Left */}
-                    <View style={[styles.podiumItem, styles.podiumSecond]}>
-                        <View style={styles.positionBadge}>
-                            <Text style={styles.positionText}>2</Text>
-                        </View>
-                        <Image
-                            source={{ uri: TOP_3_CLUBS[1].logoUri }}
-                            style={styles.podiumLogo}
-                        />
-                    </View>
+                    <TouchableOpacity
+  style={[styles.podiumItem, styles.podiumSecond]}
+  onPress={() => router.push('/Community/Community')}
+>
+  <View style={styles.positionBadge}>
+    <Text style={styles.positionText}>2</Text>
+  </View>
+  <Image
+    source={{ uri: TOP_3_CLUBS[1].logoUri }}
+    style={styles.podiumLogo}
+  />
+</TouchableOpacity>
+
 
                     {/* Position 1 - Center */}
-                    <View style={[styles.podiumItem, styles.podiumFirst]}>
-                        <View style={[styles.positionBadge, styles.firstBadge]}>
-                            <Text style={styles.positionText}>1</Text>
-                        </View>
-                        <Image
-                            source={{ uri: TOP_3_CLUBS[0].logoUri }}
-                            style={[styles.podiumLogo, styles.firstLogo]}
-                        />
-                    </View>
+                    <TouchableOpacity
+  style={[styles.podiumItem, styles.podiumFirst]}
+  onPress={() => router.push('/Community/Community')}
+>
+  <View style={styles.positionBadge}>
+    <Text style={styles.positionText}>1</Text>
+  </View>
+  <Image
+    source={{ uri: TOP_3_CLUBS[1].logoUri }}
+    style={styles.podiumLogo}
+  />
+</TouchableOpacity>
+
 
                     {/* Position 3 - Right */}
-                    <View style={[styles.podiumItem, styles.podiumThird]}>
-                        <View style={styles.positionBadge}>
-                            <Text style={styles.positionText}>3</Text>
-                        </View>
-                        <Image
-                            source={{ uri: TOP_3_CLUBS[2].logoUri }}
-                            style={styles.podiumLogo}
-                        />
-                    </View>
+                    <TouchableOpacity
+  style={[styles.podiumItem, styles.podiumThird]}
+  onPress={() => router.push('/Community/Community')}
+>
+  <View style={styles.positionBadge}>
+    <Text style={styles.positionText}>3</Text>
+  </View>
+  <Image
+    source={{ uri: TOP_3_CLUBS[1].logoUri }}
+    style={styles.podiumLogo}
+  />
+</TouchableOpacity>
+
                 </View>
             </LinearGradient>
 
             {/* Bottom Rankings Card */}
-            <View style={styles.rankingsCard}>
-                <FlatList
-                    data={CLUBS_DATA}
-                    renderItem={renderClubItem}
-                    keyExtractor={(item) => item.rank.toString()}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.listContent}
-                />
-            </View>
+            <TouchableOpacity onPress={() => router.push('/Community/HomeCommunity')} activeOpacity={0.9}>
+  <View style={styles.rankingsCard}>
+    <FlatList
+      data={CLUBS_DATA}
+      renderItem={renderClubItem}
+      keyExtractor={(item) => item.rank.toString()}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.listContent}
+    />
+  </View>
+</TouchableOpacity>
+
 
             {/* 3. Integrated BottomNav */}
             <View style={styles.bottomNavContainer}>
