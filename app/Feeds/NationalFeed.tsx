@@ -205,19 +205,24 @@ const NationalFeed: React.FC = () => {
         </LinearGradient>
 
         <View style={styles.searchContainer}>
-          <View style={styles.searchBar} >
-            <View style={styles.searchIcon}>
-              <Search color={COLORS.greyText} size={18} />
-            </View>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search"
-              placeholderTextColor={COLORS.greyText}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-        </View>
+  <TouchableOpacity 
+    style={styles.searchBar} 
+    onPress={() => router.push('./SearchProfile')} // Navigate to SearchProfile.tsx in the same folder
+  >
+    <View style={styles.searchIcon}>
+      <Search color={COLORS.greyText} size={18} />
+    </View>
+    <TextInput
+      style={styles.searchInput}
+      placeholder="Search"
+      placeholderTextColor={COLORS.greyText}
+      value={searchQuery}
+      onChangeText={setSearchQuery}
+      editable={false} // Disable editing to make it purely navigational
+    />
+  </TouchableOpacity>
+</View>
+
 
         <ScrollView
           style={styles.feedContainer}

@@ -162,14 +162,18 @@ export default function MemberSearchScreen() {
     };
 
     const renderMemberItem = ({ item }: { item: Member }) => (
-        <TouchableOpacity style={styles.memberCard} onPress={() => handleMemberPress(item)}>
-            <Image source={{ uri: item.avatarUri }} style={styles.memberAvatar} />
-            <View style={styles.memberInfo}>
-                <Text style={styles.memberName}>{item.name}</Text>
-                <Text style={styles.memberPosition}>{item.position}</Text>
-                <Text style={styles.memberDetails}>{item.district} • {item.homeClub}</Text>
-            </View>
-        </TouchableOpacity>
+        <TouchableOpacity 
+  style={styles.memberCard} 
+  onPress={() => router.push('/Profile/profile')} // Navigate to profile.tsx in the same folder
+>
+  <Image source={{ uri: item.avatarUri }} style={styles.memberAvatar} />
+  <View style={styles.memberInfo}>
+    <Text style={styles.memberName}>{item.name}</Text>
+    <Text style={styles.memberPosition}>{item.position}</Text>
+    <Text style={styles.memberDetails}>{item.district} • {item.homeClub}</Text>
+  </View>
+</TouchableOpacity>
+
     );
 
     const renderContent = () => {

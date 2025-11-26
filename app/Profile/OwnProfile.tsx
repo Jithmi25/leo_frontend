@@ -275,7 +275,7 @@ export default function SetProfileScreen() {
                     {/* Notification Toggles */}
                     <View style={styles.notificationToggles}>
                         <View style={styles.toggleRow}>
-                            <Text style={styles.toggleText}>New posts and comments</Text>
+                            <Text style={styles.toggleText}>National Announcements</Text>
                             <Switch
                                 value={notificationNewPosts}
                                 onValueChange={setNotificationNewPosts}
@@ -293,7 +293,7 @@ export default function SetProfileScreen() {
                             />
                         </View>
                         <View style={styles.toggleRow}>
-                            <Text style={styles.toggleText}>Event reminders</Text>
+                            <Text style={styles.toggleText}>Home Club Announcements</Text>
                             <Switch
                                 value={notificationEvents}
                                 onValueChange={setNotificationEvents}
