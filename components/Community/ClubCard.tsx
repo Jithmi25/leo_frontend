@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { TouchableOpacity } from 'react-native'; // Add this if not already imported
+import { router } from 'expo-router';
 interface ClubCardProps {
   clubName: string;
   gradientFrom: string;
@@ -21,9 +22,14 @@ export default function ClubCard({
         end={{ x: 1, y: 1 }}
         style={styles.border}
       >
-        <View style={styles.innerContent}>
-          <Text style={styles.clubName}>{clubName}</Text>
-        </View>
+
+        <TouchableOpacity 
+  style={styles.innerContent} 
+  onPress={() => router.push('/Community/HomeCommunity')} // Navigate to the community/homeCommunity route
+>
+  <Text style={styles.clubName}>{clubName}</Text>
+</TouchableOpacity>
+
       </LinearGradient>
     </View>
   );

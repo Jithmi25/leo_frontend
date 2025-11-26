@@ -119,7 +119,8 @@ export default function FeedScreen() {
                 style={styles.viewButton}
                 onPress={() => handleViewDistrict(item.name)}
             >
-                <Text style={styles.viewButtonText}>View</Text>
+                <Text style={styles.viewButtonText} onPress={() => router.push('/Community/Community')}>View</Text>
+                
             </TouchableOpacity>
         </View>
     );

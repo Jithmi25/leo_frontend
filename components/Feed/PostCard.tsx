@@ -10,6 +10,7 @@ import {
   ImageStyle,
 } from 'react-native';
 import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react-native';
+import ShareModal from '@/components/ShareModel'; // Import the separate ShareModal component
 
 const COLORS = {
   black: '#000000',
@@ -73,6 +74,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const defaultAvatar = 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1';
   const defaultMedia = 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800';
@@ -85,6 +87,16 @@ const PostCard: React.FC<PostCardProps> = ({
         isLiked ? likes - 1 : likes + 1
       }`
     );
+  };
+
+  const handleShare = () => {
+    setIsModalVisible(true);
+    onSharePress && onSharePress();
+  };
+
+  const handleShareOption = (option: string) => {
+    // Optional: Add any additional logic here if needed after sharing
+    console.log(`Shared to ${option}`);
   };
 
   const formatCount = (count: number): string => {
@@ -180,7 +192,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={onSharePress || (() => console.log('Share pressed'))}
+          onPress={handleShare}
           activeOpacity={0.7}
         >
           <View style={styles.actionRow}>
@@ -189,6 +201,13 @@ const PostCard: React.FC<PostCardProps> = ({
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Share Modal Component */}
+      <ShareModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onShareOption={handleShareOption}
+      />
     </View>
   );
 };
