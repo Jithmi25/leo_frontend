@@ -56,7 +56,6 @@ export default function PastEvent() {
   const [selectedDate, setSelectedDate] = useState(20);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Updated to match BottomNav's onTabPress signature
   const handleTabPress = (path: string, tab: any) => {
     router.push(path as any);
   };
@@ -69,63 +68,73 @@ export default function PastEvent() {
     >
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft color={COLORS.white} size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Event & Project</Text>
-        <TouchableOpacity>
-          <User color={COLORS.white} size={24} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.headerContent}>
-        <View style={styles.searchInputWrapper}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Event Here..."
-            placeholderTextColor={COLORS.greyText}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <TouchableOpacity style={styles.searchButton}>
-            <Search color={COLORS.white} size={20} />
+      {/* ⭐ Entire screen scrolls now */}
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[2]} // tabSelector sticks at top
+      >
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <ArrowLeft color={COLORS.white} size={24} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Event & Project</Text>
+          <TouchableOpacity>
+            <User color={COLORS.white} size={24} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.dateLabel}>November 20, 2025</Text>
-        <Text style={styles.todayLabel}>TODAY</Text>
-
-        <View style={styles.dateSelector}>
-          {DATES.map((date, index) => (
-            <TouchableOpacity
-              key={date}
-              style={[
-                styles.dateButton,
-                selectedDate === date && styles.dateButtonActive,
-              ]}
-              onPress={() => setSelectedDate(date)}
-            >
-              <Text
-                style={[
-                  styles.dateNumber,
-                  selectedDate === date && styles.dateTextActive,
-                ]}
-              >
-                {date}
-              </Text>
-              <Text
-                style={[
-                  styles.dateDay,
-                  selectedDate === date && styles.dateTextActive,
-                ]}
-              >
-                {WEEKDAYS[index]}
-              </Text>
+        {/* HEADER CONTENT */}
+        <View style={styles.headerContent}>
+          <View style={styles.searchInputWrapper}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search Event Here..."
+              placeholderTextColor={COLORS.greyText}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <TouchableOpacity style={styles.searchButton}>
+              <Search color={COLORS.white} size={20} />
             </TouchableOpacity>
-          ))}
+          </View>
+
+          <Text style={styles.dateLabel}>November 20, 2025</Text>
+          <Text style={styles.todayLabel}>TODAY</Text>
+
+          <View style={styles.dateSelector}>
+            {DATES.map((date, index) => (
+              <TouchableOpacity
+                key={date}
+                style={[
+                  styles.dateButton,
+                  selectedDate === date && styles.dateButtonActive,
+                ]}
+                onPress={() => setSelectedDate(date)}
+              >
+                <Text
+                  style={[
+                    styles.dateNumber,
+                    selectedDate === date && styles.dateTextActive,
+                  ]}
+                >
+                  {date}
+                </Text>
+                <Text
+                  style={[
+                    styles.dateDay,
+                    selectedDate === date && styles.dateTextActive,
+                  ]}
+                >
+                  {WEEKDAYS[index]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
+        {/* ⭐ Sticky Tab Selector */}
         <View style={styles.tabSelector}>
           <TouchableOpacity onPress={() => router.push('/Events/UpcomingEvent' as any)}>
             <Text style={styles.tabText}>Upcoming</Text>
@@ -137,19 +146,14 @@ export default function PastEvent() {
             <Text style={styles.tabText}>My Event</Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      <View style={styles.whiteCard}>
-        <ScrollView
-          style={styles.eventsContainer}
-          contentContainerStyle={styles.eventsContent}
-          showsVerticalScrollIndicator={false}
-        >
+        {/* ⭐ White card now scrolls upward and expands */}
+        <View style={styles.whiteCard}>
           {mockPastEvents.map((event) => (
             <PastEventCard key={event.id} event={event} />
           ))}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
 
       <BottomNav activeTab="events" onTabPress={handleTabPress} />
     </LinearGradient>
@@ -157,9 +161,8 @@ export default function PastEvent() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -168,21 +171,24 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 12,
   },
+
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.white,
   },
+
   headerContent: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    zIndex: 10,
   },
+
   searchInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
   },
+
   searchInput: {
     flex: 1,
     backgroundColor: COLORS.white,
@@ -191,29 +197,34 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
   },
+
   searchButton: {
     backgroundColor: COLORS.goldAccent,
     padding: 12,
     borderRadius: 8,
     marginLeft: 8,
   },
+
   dateLabel: {
     color: COLORS.white,
     fontSize: 14,
     opacity: 0.8,
     marginBottom: 4,
   },
+
   todayLabel: {
     color: COLORS.white,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 16,
   },
+
   dateSelector: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
+
   dateButton: {
     backgroundColor: COLORS.oliveLight,
     borderRadius: 12,
@@ -225,54 +236,65 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
+
   dateButtonActive: {
     borderColor: COLORS.goldAccent,
     backgroundColor: 'rgba(139, 139, 103, 0.8)',
   },
+
   dateNumber: {
     color: COLORS.white,
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 2,
   },
+
   dateDay: {
     color: COLORS.white,
     fontSize: 10,
     fontWeight: '500',
   },
+
   dateTextActive: {
     color: COLORS.goldAccent,
   },
+
   tabSelector: {
     flexDirection: 'row',
     gap: 24,
+   backgroundColor: 'rgba(0, 0, 0, 0.8)',  // small opacity so sticky looks good
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
+
   tabActive: {
     borderBottomWidth: 3,
     borderBottomColor: COLORS.goldAccent,
     paddingBottom: 4,
   },
+
   tabTextActive: {
     color: COLORS.goldAccent,
     fontSize: 16,
     fontWeight: '600',
   },
+
   tabText: {
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '500',
   },
+
   whiteCard: {
     flex: 1,
+    marginTop: 16,
     backgroundColor: COLORS.white,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    overflow: 'hidden',
-  },
-  eventsContainer: {
-    flex: 1,
-  },
-  eventsContent: {
     paddingHorizontal: 16,
     paddingVertical: 16,
     paddingBottom: 100,
