@@ -154,7 +154,7 @@ export default function CartScreen() {
               style={styles.checkoutButton}
               onPress={() => {
                 alert('Order placed successfully!');
-                router.push('/Shopping/OrderHistory');
+                router.push('/Shopping/Payment');
               }}
             >
               <Text style={styles.checkoutButtonText}>Checkout</Text>

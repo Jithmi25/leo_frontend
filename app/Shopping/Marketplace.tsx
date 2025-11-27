@@ -89,7 +89,8 @@ export default function MarketplaceScreen() {
     };
 
     const handleQuickShop = (product: Product) => {
-        console.log('Quick shop:', product.name);
+        // Navigate directly to the payment page
+        router.push('/Shopping/Payment');
     };
 
     const onTabPress = (path: string, tab: 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events') => {
@@ -144,7 +145,7 @@ export default function MarketplaceScreen() {
                     <Text style={styles.headerSubtitle}>SRI LANKA</Text>
                 </View>
                 <View style={{ flex: 1 }} />
-                <TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/Profile/OwnProfile')}>
                     <Image source={{ uri: AVATAR_URL }} style={styles.headerAvatar} />
                 </TouchableOpacity>
             </View>
@@ -248,10 +249,24 @@ export default function MarketplaceScreen() {
                                 </View>
 
                                 <View style={styles.modalButtons}>
-                                    <TouchableOpacity style={styles.viewCartButton}>
+                                    <TouchableOpacity 
+                                        style={styles.viewCartButton}
+                                        activeOpacity={0.7} 
+                                        onPress={() => {
+                                            setShowCartModal(false); // Close modal before navigating
+                                            router.push('/Shopping/Cart');
+                                        }}
+                                    >
                                         <Text style={styles.viewCartText}>View Cart(1)</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.checkoutButton}>
+                                    <TouchableOpacity 
+                                        style={styles.checkoutButton} 
+                                        activeOpacity={0.7} 
+                                        onPress={() => {
+                                            setShowCartModal(false); // Close modal before navigating
+                                            router.push('/Shopping/Payment');
+                                        }}
+                                    >
                                         <Text style={styles.checkoutText}>Checkout</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -263,7 +278,6 @@ export default function MarketplaceScreen() {
         </SafeAreaView>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

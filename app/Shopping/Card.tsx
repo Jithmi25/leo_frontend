@@ -38,10 +38,12 @@ export default function CardScreen() {
     const shippingFee = 0;
     const grandTotal = subtotal + shippingFee;
 
-    const handlePayNow = () => {
-        console.log('Processing payment...');
-        // TODO: Implement payment processing
-    };
+    
+
+
+
+const handlePayNow = () => router.push("/Shopping/Confirmation");
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -58,7 +60,7 @@ export default function CardScreen() {
                     <Text style={styles.headerSubtitle}>SRI LANKA</Text>
                 </View>
                 <View style={{ flex: 1 }} />
-                <TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/Profile/OwnProfile')}>
                     <Image source={{ uri: AVATAR_URL }} style={styles.headerAvatar} />
                 </TouchableOpacity>
             </View>

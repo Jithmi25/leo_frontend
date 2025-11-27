@@ -55,7 +55,7 @@ export default function PaymentScreen() {
                     <Text style={styles.headerSubtitle}>SRI LANKA</Text>
                 </View>
                 <View style={{ flex: 1 }} />
-                <TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/Profile/OwnProfile')}>
                     <Image source={{ uri: AVATAR_URL }} style={styles.headerAvatar} />
                 </TouchableOpacity>
             </View>
@@ -201,7 +201,7 @@ export default function PaymentScreen() {
                     </View>
 
                     {/* Submit Button */}
-                    <TouchableOpacity style={styles.submitButton}>
+                    <TouchableOpacity style={styles.submitButton} activeOpacity={0.7} onPress={() => router.push('/Shopping/Card')}>
                         <Text style={styles.submitButtonText}>Submit</Text>
                     </TouchableOpacity>
 
