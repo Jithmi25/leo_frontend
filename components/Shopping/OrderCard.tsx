@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import { router } from 'expo-router';
+
 
 const COLORS = {
   black: '#000000',
@@ -84,9 +86,10 @@ export default function OrderCard({ order, onTrackOrder }: OrderCardProps) {
           <Text style={styles.totalAmount}>${order.total.toFixed(2)}</Text>
         </View>
 
-        <TouchableOpacity
+        <TouchableOpacity activeOpacity={0.8} 
+        onPress={() => router.push('/Shopping/Tracking')}
           style={styles.trackButton}
-          onPress={() => onTrackOrder(order.id)}
+          
         >
           <Text style={styles.trackButtonText}>Track Order</Text>
           <ChevronRight size={16} color={COLORS.darkText} />

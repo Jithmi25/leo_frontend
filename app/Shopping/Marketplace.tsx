@@ -198,8 +198,8 @@ export default function MarketplaceScreen() {
                     <Text style={styles.heroText}>
                         Welcome to Everything to <Text style={styles.heroTextGold}>Lions!</Text>
                     </Text>
-                    <TouchableOpacity style={styles.heroButton}>
-                        <Text style={styles.heroButtonText}>Shop Club Applies</Text>
+                    <TouchableOpacity style={styles.heroButton} activeOpacity={0.8} onPress={() => router.push('/Shopping/Orders')}>
+                        <Text style={styles.heroButtonText}>My Orders</Text>
                     </TouchableOpacity>
                 </LinearGradient>
 
