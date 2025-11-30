@@ -13,16 +13,15 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-// Assuming BottomNav is imported from its location (e.g., './BottomNav')
-// NOTE: You must replace './BottomNav' with the actual path to your BottomNav file.
+// NOTE: You must replace '@/components/BottomNav' with the actual path to your BottomNav file.
 import BottomNav from '@/components/BottomNav'; 
 
 // --- START: Types and Constants copied from BottomNav for compilation ---
 type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
 const EXPO_ROUTER_PATHS: Record<TabName, string> = {
     home: '/Feeds/NationalFeed',
-    shop: '/Shopping/Marketplace', // Updated to match BottomNav
-    leaderboard: '/customScreens/Leaderboard', // Fixed to match BottomNav path
+    shop: '/Shopping/Marketplace',
+    leaderboard: '/customScreens/Leaderboard',
     notifications: '/Feeds/Notification',
     events: '/Events/UpcomingEvent',
 };
@@ -36,8 +35,9 @@ const COLORS = {
     darkText: '#000000',
     greyText: '#999999',
     lightGrey: '#F0F0F0',
-    // Aligning goldAccent from BottomNav for the active state indicator color
     goldAccent: '#FFC80A',
+    // Added for the red circle color from the image:
+    redCircle: '#8B0000', 
 };
 
 interface TopClub {
@@ -52,10 +52,14 @@ interface Club {
     logoUri: string;
 }
 
+// Updated TOP_3_CLUBS to match image text and colors
 const TOP_3_CLUBS: TopClub[] = [
-    { position: 1, name: 'Leo District 306 D11', logoUri: 'https://placehold.co/80x80/2D5F3F/FFF?text=D11' },
-    { position: 2, name: 'Leo District 306 A2', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' },
-    { position: 3, name: 'Leo District 306 D01', logoUri: 'https://placehold.co/80x80/1E90FF/FFF?text=D01' },
+    // Position 1 (Center) - Red Circle, Gold Badge
+    { position: 1, name: 'Leo District 306 A2', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
+    // Position 2 (Left) - Red Circle, Gold Badge
+    { position: 2, name: 'Leo District 306 D11', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
+    // Position 3 (Right) - Red Circle, Gold Badge
+    { position: 3, name: 'Leo District 306 D01', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
 ];
 
 const CLUBS_DATA: Club[] = [
@@ -71,28 +75,58 @@ const CLUBS_DATA: Club[] = [
     { rank: 10, name: 'Leo Club of Kandy', logoUri: 'https://placehold.co/40x40/4682B4/FFF?text=K' },
 ];
 
+// --- NEW PODIUM COMPONENT ---
+interface PodiumPlaceProps {
+    club: TopClub;
+    sizeStyle: any;
+    rankStyle: any;
+    containerStyle: any;
+}
+
+const PodiumPlace = ({ club, sizeStyle, rankStyle, containerStyle }: PodiumPlaceProps) => (
+    <TouchableOpacity
+        style={[styles.podiumItem, containerStyle]}
+        onPress={() => router.push('/Community/Community')}
+    >
+        {/* Position Badge */}
+        <View style={[styles.positionBadge, rankStyle]}>
+            <Text style={styles.positionText}>{club.position}</Text>
+        </View>
+
+        {/* Logo (The Red Circle with "A2" text) */}
+        <Image
+            source={{ uri: club.logoUri }}
+            style={[styles.podiumLogo, sizeStyle]}
+        />
+    </TouchableOpacity>
+);
+// ----------------------------
+
 export default function LeaderboardScreen() {
     // 1. State for active tab, defaulting to 'leaderboard'
     const [activeTab, setActiveTab] = useState<TabName>('leaderboard');
 
     // 2. Tab Press Handler: Navigates using Expo Router and updates the state
     const handleTabPress = (path: string, tab: TabName) => {
-        // Find the correct path based on the tab name (using a defined map)
         const navigationPath = EXPO_ROUTER_PATHS[tab];
-
         if (navigationPath && tab !== activeTab) {
-            router.push(navigationPath as any); // Changed to push and cast to any to fix TypeScript error
+            router.push(navigationPath as any); 
         }
         setActiveTab(tab);
     };
     
+    // Helper to find data by position (1, 2, or 3)
+    const getTopClub = (position: 1 | 2 | 3) => TOP_3_CLUBS.find(club => club.position === position);
+
     const renderClubItem = ({ item }: { item: Club }) => (
         <View style={styles.clubRow}>
             <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{item.rank}</Text>
             </View>
             <Text style={styles.clubName}>{item.name}</Text>
-            <Image source={{ uri: item.logoUri }} style={styles.clubLogo} />
+            <View style={[styles.clubLogoContainer, { backgroundColor: item.rank === 1 ? COLORS.goldMid : COLORS.greyText }]}>
+                <Image source={{ uri: item.logoUri }} style={styles.clubLogo} />
+            </View>
         </View>
     );
 
@@ -119,67 +153,50 @@ export default function LeaderboardScreen() {
 
                 {/* Top 3 Podium */}
                 <View style={styles.podiumContainer}>
-
-
+                    
                     {/* Position 2 - Left */}
-                    <TouchableOpacity
-  style={[styles.podiumItem, styles.podiumSecond]}
-  onPress={() => router.push('/Community/Community')}
->
-  <View style={styles.positionBadge}>
-    <Text style={styles.positionText}>2</Text>
-  </View>
-  <Image
-    source={{ uri: TOP_3_CLUBS[1].logoUri }}
-    style={styles.podiumLogo}
-  />
-</TouchableOpacity>
+                    <PodiumPlace 
+                        club={getTopClub(2)!} 
+                        sizeStyle={styles.secondLogo} 
+                        rankStyle={styles.secondBadge} 
+                        containerStyle={styles.podiumSecond}
+                    />
 
 
                     {/* Position 1 - Center */}
-                    <TouchableOpacity
-  style={[styles.podiumItem, styles.podiumFirst]}
-  onPress={() => router.push('/Community/Community')}
->
-  <View style={styles.positionBadge}>
-    <Text style={styles.positionText}>1</Text>
-  </View>
-  <Image
-    source={{ uri: TOP_3_CLUBS[1].logoUri }}
-    style={styles.podiumLogo}
-  />
-</TouchableOpacity>
+                    <PodiumPlace 
+                        club={getTopClub(1)!} 
+                        sizeStyle={styles.firstLogo} 
+                        rankStyle={styles.firstBadge} 
+                        containerStyle={styles.podiumFirst}
+                    />
 
 
                     {/* Position 3 - Right */}
-                    <TouchableOpacity
-  style={[styles.podiumItem, styles.podiumThird]}
-  onPress={() => router.push('/Community/Community')}
->
-  <View style={styles.positionBadge}>
-    <Text style={styles.positionText}>3</Text>
-  </View>
-  <Image
-    source={{ uri: TOP_3_CLUBS[1].logoUri }}
-    style={styles.podiumLogo}
-  />
-</TouchableOpacity>
+                    <PodiumPlace 
+                        club={getTopClub(3)!} 
+                        sizeStyle={styles.thirdLogo} 
+                        rankStyle={styles.thirdBadge} 
+                        containerStyle={styles.podiumThird}
+                    />
 
                 </View>
             </LinearGradient>
 
             {/* Bottom Rankings Card */}
-            <TouchableOpacity onPress={() => router.push('/Community/HomeCommunity')} activeOpacity={0.9}>
-  <View style={styles.rankingsCard}>
-    <FlatList
-      data={CLUBS_DATA}
-      renderItem={renderClubItem}
-      keyExtractor={(item) => item.rank.toString()}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.listContent}
-    />
-  </View>
-</TouchableOpacity>
+            {/* Changed TouchableOpacity wrapping FlatList to View, as scrolling content 
+                should not be wrapped in a navigation button. Added a separate touchable 
+                area if navigation is required. For now, removed external touchable. */}
+            <View style={styles.rankingsCard}>
+                <FlatList
+                    data={CLUBS_DATA}
+                    renderItem={renderClubItem}
+                    keyExtractor={(item) => item.rank.toString()}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.listContent}
+                    scrollEnabled={true} // Ensure scrolling is enabled inside this view
+                />
+            </View>
 
 
             {/* 3. Integrated BottomNav */}
@@ -192,6 +209,10 @@ export default function LeaderboardScreen() {
         </View>
     );
 }
+
+// ----------------------------------------------------------------------
+// --- STYLES ---
+// ----------------------------------------------------------------------
 
 const styles = StyleSheet.create({
     container: {
@@ -217,7 +238,7 @@ const styles = StyleSheet.create({
     podiumContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'flex-end',
+        alignItems: 'flex-end', // Aligns items to the bottom baseline
         paddingHorizontal: 20,
         marginTop: 20,
     },
@@ -225,15 +246,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginHorizontal: 8,
     },
+    
+    // --- Podium Positioning (Height Difference) ---
     podiumFirst: {
-        marginBottom: 20,
+        marginBottom: 0, // Sits highest
     },
     podiumSecond: {
-        marginBottom: 0,
+        marginBottom: 20, // Sits lower
     },
     podiumThird: {
-        marginBottom: 0,
+        marginBottom: 20, // Sits lower
     },
+    // ---------------------------------------------
+    
     positionBadge: {
         backgroundColor: COLORS.goldMid,
         width: 32,
@@ -241,38 +266,63 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 8,
+        // Absolute positioning to place it on top of the logo circle
+        zIndex: 10, 
+        position: 'absolute', 
+        top: -16, // Adjusted to sit just above the circle's top edge
     },
     firstBadge: {
         width: 36,
         height: 36,
         borderRadius: 18,
     },
+    secondBadge: {
+        // No change
+    },
+    thirdBadge: {
+        // No change
+    },
     positionText: {
         fontSize: 16,
         fontWeight: '800',
         color: COLORS.white,
     },
+
+    // --- Logo Styles (Size Difference) ---
     podiumLogo: {
+        // Base style for all logos (Red circle from image)
+        backgroundColor: COLORS.redCircle,
         width: 80,
         height: 80,
         borderRadius: 40,
         borderWidth: 3,
         borderColor: COLORS.white,
+        // The image itself is the text "A2" with a transparent background in the placeholder URL
+        resizeMode: 'contain', 
     },
     firstLogo: {
+        // Largest for 1st place
         width: 90,
         height: 90,
         borderRadius: 45,
     },
+    secondLogo: {
+        // No change, uses podiumLogo size
+    },
+    thirdLogo: {
+        // No change, uses podiumLogo size
+    },
+    // ------------------------------------
+    
     rankingsCard: {
-        flex: 1,
+        // Flex 1 to ensure it takes up the remaining space
+        flex: 1, 
         backgroundColor: COLORS.white,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         marginTop: -20,
         paddingTop: 20,
-        // Reduced bottom padding to account for the new fixed BottomNav
+        // Reduced bottom padding to account for the fixed BottomNav
         paddingBottom: 100, 
     },
     listContent: {
@@ -307,18 +357,25 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: COLORS.darkText,
     },
+    clubLogoContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // Note: The logo in the list is an initial circle, using background color to simulate the placeholder
+    },
     clubLogo: {
         width: 40,
         height: 40,
         borderRadius: 20,
+        resizeMode: 'contain',
     },
-    // 4. ADDED: New container to position the BottomNav
     bottomNavContainer: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
+        zIndex: 100, // Ensure it's on top of the scrollable content
     },
-    // REMOVED all original bottomNav styles (bottomNav, navItem, navItemActive, navText, navTextActive)
-    // as they are now defined within the imported BottomNav component.
 });
