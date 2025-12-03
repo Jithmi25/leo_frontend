@@ -1,125 +1,181 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronRight } from 'lucide-react-native';
+import Svg, { Circle } from 'react-native-svg';
 
-interface CreatePollCardProps {
+// 1. Update the Interface names to match the incoming data
+interface PollCardProps {
   title: string;
   status: string;
   imageUrl: string;
+  // Change 'likePercentage' to 'agreePercentage'
   agreePercentage: number;
+  // Change 'commentPercentage' to 'disagreePercentage'
   disagreePercentage: number;
 }
 
-export default function CreatePollCard({
+// 2. Update the function signature and destructured props
+export default function PostToFeedCard({
   title,
   status,
   imageUrl,
+  // Use the new prop names
   agreePercentage,
   disagreePercentage,
-}: CreatePollCardProps) {
+}: PollCardProps) {
+  const renderPercentageCircle = (percentage: number) => {
+    const radius = 16;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <Svg width={44} height={44} viewBox="0 0 44 44">
+        <Circle
+          cx="22"
+          cy="22"
+          r={radius}
+          fill="none"
+          stroke="rgba(255, 255, 255, 0.15)"
+          strokeWidth="2.5"
+        />
+        <Circle
+          cx="22"
+          cy="22"
+          r={radius}
+          fill="none"
+          stroke="#FFD700"
+          strokeWidth="2.5"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          rotation="-90"
+          origin="22, 22"
+        />
+      </Svg>
+    );
+  };
+
   return (
-    <LinearGradient
-      colors={['rgba(0,0,0,0.9)', 'rgba(139,69,19,0.5)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.card}>
-      <View style={styles.header}>
-        <Text style={styles.createText}>Create a </Text>
-        <Text style={styles.newPollText}>New Poll</Text>
-      </View>
-
-      <View style={styles.divider} />
-
-      <View style={styles.content}>
-        <View style={styles.leftContent}>
-          <Text style={styles.previousPoll}>{title}</Text>
-          <Text style={styles.status}>{status}</Text>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <View style={styles.pieChart}>
-                <View
-                  style={[
-                    styles.pieSegment,
-                    {
-                      width: `${agreePercentage}%`,
-                      backgroundColor: '#FFD700',
-                    },
-                  ]}
-                />
+    <View style={styles.gradientBorder}>
+      <LinearGradient
+        colors={['#FFD700', '#FFA500']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.borderGradient}>
+        <View style={styles.card}>
+          <View style={styles.header}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.postText}>Create new</Text>
+              <View style={styles.feedBackground}>
+                <Text style={styles.feedText}>Poll</Text>
               </View>
-              <Text style={styles.percentage}>{agreePercentage}%</Text>
-              <Text style={styles.statLabel}>Agree</Text>
+            </View>
+            <ChevronRight color="#FFD700" size={24} strokeWidth={3} />
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.content}>
+            <View style={styles.leftContent}>
+              <Text style={styles.previousPost}>{title}</Text>
+              <Text style={styles.status}>{status}</Text>
+
+              <View style={styles.statsContainer}>
+                <View style={styles.statItem}>
+                  {/* 3. Use 'agreePercentage' */}
+                  {renderPercentageCircle(agreePercentage)}
+                  {/* 4. Use 'agreePercentage' for text display */}
+                  <Text style={styles.percentage}>{agreePercentage}%</Text>
+                  <Text style={styles.statLabel}>Agree</Text>
+                </View>
+
+                <View style={styles.statItem}>
+                  {/* 5. Use 'disagreePercentage' */}
+                  {renderPercentageCircle(disagreePercentage)}
+                  {/* 6. Use 'disagreePercentage' for text display */}
+                  <Text style={styles.percentage}>{disagreePercentage}%</Text>
+                  <Text style={styles.statLabel}>Dissagree</Text>
+                </View>
+              </View>
             </View>
 
-            <View style={styles.statItem}>
-              <View style={styles.pieChart}>
-                <View
-                  style={[
-                    styles.pieSegment,
-                    {
-                      width: `${disagreePercentage}%`,
-                      backgroundColor: '#FFD700',
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.percentage}>{disagreePercentage}%</Text>
-              <Text style={styles.statLabel}>Disagree</Text>
-            </View>
+            <Image source={{ uri: imageUrl }} style={styles.postImage} />
           </View>
         </View>
-
-        <Image source={{ uri: imageUrl }} style={styles.pollImage} />
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  gradientBorder: {
     borderRadius: 16,
+    overflow: 'hidden',
+  },
+  borderGradient: {
+    padding: 2,
+    borderRadius: 16,
+  },
+  card: {
+    backgroundColor: '#3A3A3A',
+    borderRadius: 14,
     padding: 16,
-    backgroundColor: '#2A2A2A',
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  createText: {
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  postText: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#FFFFFF',
   },
-  newPollText: {
+  feedBackground: {
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 3,
+  },
+  feedText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFD700',
+    color: '#000000',
   },
   divider: {
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    marginVertical: 12,
+    height: 1.5,
+    backgroundColor: '#FFD700',
+    marginBottom: 12,
   },
   content: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 12,
   },
   leftContent: {
     flex: 1,
   },
-  previousPoll: {
+  previousPost: {
     fontSize: 14,
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 4,
+    lineHeight: 18,
   },
   status: {
     fontSize: 12,
     color: '#FFD700',
     fontStyle: 'italic',
-    marginBottom: 16,
+    fontWeight: '500',
+    marginBottom: 12,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -127,34 +183,21 @@ const styles = StyleSheet.create({
   },
   statItem: {
     alignItems: 'center',
-  },
-  pieChart: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  pieSegment: {
-    height: 4,
-    borderRadius: 2,
+    gap: 4,
   },
   percentage: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: '#FFD700',
-    marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#FFFFFF',
+    fontWeight: '600',
   },
-  pollImage: {
-    width: 80,
-    height: 80,
+  postImage: {
+    width: 70,
+    height: 70,
     borderRadius: 8,
-    marginLeft: 12,
   },
 });

@@ -1,3 +1,5 @@
+import { Trophy } from 'lucide-react-native';
+
 declare module 'lucide-react-native' {
   import * as React from 'react';
   import { SvgProps } from 'react-native-svg';
@@ -271,4 +273,5 @@ declare module 'lucide-react-native' {
   export const CalendarCheck: Icon;
   export const UserCheck: Icon;
   export const CheckCircle2: Icon;
+  export const Trophy: Icon;
 }

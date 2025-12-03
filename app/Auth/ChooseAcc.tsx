@@ -133,7 +133,9 @@ const ChooseAccountScreen = (): React.JSX.Element => {
           <Ionicons name="arrow-back" size={30} color={COLORS.white} />
         </TouchableOpacity>
         {/* Title is slightly offset from the left to center the card content */}
+        <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/Webmaster/WMAdmin')}>
         <Text style={styles.headerTitle}>Choose Account</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Main Account Selection Card */}

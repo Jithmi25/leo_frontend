@@ -171,6 +171,11 @@ const NationalFeed: React.FC = () => {
           </TouchableOpacity>
         </View>
 
+
+
+
+        
+
         <LinearGradient
           colors={['#1C1C1C', '#3D2817'] as const}
           start={{ x: 0, y: 0 }}

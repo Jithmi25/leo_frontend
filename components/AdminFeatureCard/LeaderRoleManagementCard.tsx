@@ -41,12 +41,17 @@ const styles = StyleSheet.create({
   gradientBorder: {
     padding: 2,
     borderRadius: 16,
+    // Add flex: 1 here if the parent grid container is set to stretch/flex children
+    // If all cards need to be the same height, the parent must apply a shared height or flex behavior.
   },
   innerCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
-    padding: 16,
+    // Increase padding for max height, targeting around the height of the dark cards (approx 180-200 total height)
+    paddingVertical: 24, // Increased from 20 to 24
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   titleContainer: {
     flexDirection: 'row',
@@ -66,10 +71,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#FFD700',
-    marginBottom: 16,
+    // Increased space after the text
+    marginBottom: 24, // Increased from 20 to 24
   },
   profileContainer: {
-    marginTop: 8,
+    // Keep it empty, spacing is handled by managementText margin
   },
   profileImageWrapper: {
     width: 80,

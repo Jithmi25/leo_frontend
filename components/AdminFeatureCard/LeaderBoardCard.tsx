@@ -1,12 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Trophy } from 'lucide-react-native';
 
-interface EventsCardProps {
-  receivedCount: number;
-}
-
-export default function EventsCard({ receivedCount }: EventsCardProps) {
+export default function LeaderboardCard() {
   return (
     <View style={styles.card}>
       <LinearGradient
@@ -15,22 +12,13 @@ export default function EventsCard({ receivedCount }: EventsCardProps) {
         end={{ x: 1, y: 1 }}
         style={styles.gradientBorder}>
         <View style={styles.innerCard}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.eventsText}>Events </Text>
-            <Text style={styles.ampersand}>&</Text>
-          </View>
-          <Text style={styles.rsvpText}>RSVP</Text>
-
-          <View style={styles.divider} />
-
-          <Text style={styles.recentEvent}>Recent Event</Text>
-
-          <View style={styles.receivedContainer}>
-            <Text style={styles.receivedLabel}>Received</Text>
-            <View style={styles.countContainer}>
-              <Text style={styles.count}>{receivedCount}</Text>
-              <Text style={styles.registrations}>Registrations</Text>
+          <View style={styles.content}>
+            <Trophy color="#FFD700" size={40} />
+            <View style={styles.textContainer}>
+              <Text style={styles.leaderboardText}>Leaderboard </Text>
+              <Text style={styles.ampersand}>&</Text>
             </View>
+            <Text style={styles.achievementsText}>Achievements</Text>
           </View>
         </View>
       </LinearGradient>
@@ -52,62 +40,28 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
   },
-  titleContainer: {
+  content: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  textContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  eventsText: {
-    fontSize: 18,
+  leaderboardText: {
+    fontSize: 16,
     fontWeight: '700',
-    color: '#000000',
+    color: '#FFD700',
   },
   ampersand: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#FFD700',
+    color: '#000000',
     marginLeft: 4,
   },
-  rsvpText: {
-    fontSize: 18,
+  achievementsText: {
+    fontSize: 16,
     fontWeight: '700',
     color: '#000000',
-    marginBottom: 8,
-  },
-  divider: {
-    height: 2,
-    backgroundColor: '#000000',
-    marginVertical: 12,
-    width: 60,
-  },
-  recentEvent: {
-    fontSize: 14,
-    color: '#000000',
-    fontWeight: '600',
-    marginBottom: 12,
-  },
-  receivedContainer: {
-    marginTop: 8,
-  },
-  receivedLabel: {
-    fontSize: 13,
-    color: '#000000',
-    fontWeight: '600',
-    fontStyle: 'italic',
-    marginBottom: 4,
-  },
-  countContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 4,
-  },
-  count: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFD700',
-  },
-  registrations: {
-    fontSize: 13,
-    color: '#000000',
-    fontWeight: '600',
   },
 });
