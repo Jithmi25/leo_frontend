@@ -49,6 +49,7 @@ export default function RoleManagementScreen() {
             remark,
             passcode: passcode.join(''),
         });
+         router.push('/Webmaster/WMConfirmationR');
         // TODO: Implement role assignment logic
     };
 

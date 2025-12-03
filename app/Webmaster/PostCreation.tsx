@@ -39,6 +39,8 @@ export default function PostCreationScreen() {
 
     const handlePost = () => {
         console.log('Creating post:', { postTitle, postContent, selectedCategory });
+        router.replace('/Webmaster/WMConfirmation');
+
         // TODO: Implement post creation logic
     };
 

@@ -52,7 +52,8 @@ export default function PostToFeedCard({
   };
 
   return (
-    <View style={styles.gradientBorder}>
+    <View 
+    style={styles.gradientBorder}>
       <LinearGradient
         colors={['#FFD700', '#FFA500']}
         start={{ x: 0, y: 0 }}

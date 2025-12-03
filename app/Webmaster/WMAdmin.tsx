@@ -132,21 +132,38 @@ export default function AdminOverviewScreen() {
 
         <View style={styles.grid}>
           <View style={styles.gridItem}>
-            <PostToFeedCard
-              title={mockPostFeedStats.title}
-              status={mockPostFeedStats.status}
-              imageUrl={mockPostFeedStats.imageUrl}
-              likePercentage={mockPostFeedStats.likePercentage}
-              commentPercentage={mockPostFeedStats.commentPercentage}
-            />
-          </View>
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/PostCreation')} 
+  >
+    <PostToFeedCard
+      title={mockPostFeedStats.title}
+      status={mockPostFeedStats.status}
+      imageUrl={mockPostFeedStats.imageUrl}
+      likePercentage={mockPostFeedStats.likePercentage}
+      commentPercentage={mockPostFeedStats.commentPercentage}
+    />
+  </TouchableOpacity>
+</View>
 
           <View style={styles.gridItem}>
+            <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/RoleManagement')} 
+  >
             <LeaderRoleManagementCard />
+            </TouchableOpacity>
           </View>
 
+
+
           <View style={styles.gridItem}>
+            <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/EventRegistration')} 
+  >
             <EventsCard receivedCount={mockEventStats.receivedCount} />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.gridItem}>
