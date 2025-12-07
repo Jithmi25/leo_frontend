@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import ProfileCard from '@/components/AdminFeatureCard/ProfileCard';
 import PostToFeedCard from '@/components/AdminFeatureCard/PostToFeedCard';
-import LeaderRoleManagementCard from '@/components/AdminFeatureCard/LeaderRoleManagementCard';
+import LeaderRoleManagementCard from '@/components/AdminFeatureCard/EventCreation';
 import EventsCard from '@/components/AdminFeatureCard/EventsCard';
 import CreatePollCard from '@/components/AdminFeatureCard/CreatePollCard';
 import YouWereTaggedCard from '@/components/AdminFeatureCard/YouWereTaggedCard';
@@ -149,7 +149,7 @@ export default function AdminOverviewScreen() {
           <View style={styles.gridItem}>
             <TouchableOpacity
     activeOpacity={0.8}
-    onPress={() => router.push('/Webmaster/RoleManagement')} 
+    onPress={() => router.push('/Webmaster/EventCreation')} 
   >
             <LeaderRoleManagementCard />
             </TouchableOpacity>

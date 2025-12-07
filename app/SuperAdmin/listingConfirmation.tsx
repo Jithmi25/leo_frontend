@@ -61,12 +61,14 @@ export default function WMConfirmationScreen() {
 
                 {/* Success Message */}
                 <Text style={styles.successMessage}>
-                    Your new event has been created{'\n'}successfully!
+                  Your poll has been created 
+{'\n'}successfully!
                 </Text>
 
                 {/* Info Text */}
                 <Text style={styles.infoText}>
-                    Members can now view it in the{'\n'}upcomming events section.
+                    Members can now vote in the  
+community section.{'\n'}
                 </Text>
 
                 {/* Dashboard Button */}

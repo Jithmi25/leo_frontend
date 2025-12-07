@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Calendar, Clock, MapPin, Upload } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 
 export default function CreateEventScreen() {
   const [title, setTitle] = useState('');
@@ -35,6 +36,7 @@ export default function CreateEventScreen() {
       registrationLimit,
       imageUrl,
     });
+    router.push('/Webmaster/WMAConfirmationE');
   };
 
   return (
