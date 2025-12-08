@@ -67,7 +67,7 @@ const PastEventCard: React.FC<PastEventCardProps> = ({ event }) => {
         </View>
 
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/Events/Gallery')}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('Events/Gallery')}>
             <ImageIcon color={COLORS.mediumGrey} size={20} />
             <Text style={styles.actionText} >View Gallery</Text>
           </TouchableOpacity>

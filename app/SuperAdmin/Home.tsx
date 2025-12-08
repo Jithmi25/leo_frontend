@@ -28,6 +28,7 @@ const logoImage = {
 export default function SuperAdminHomeScreen() {
     const handleNavigate = (screen: string) => {
         console.log('Navigate to:', screen);
+        router.push('/SuperAdmin/RoleManagement');
         // In a real app, you would use router.push(screen)
         // router.push(screen);
     };
@@ -88,7 +89,7 @@ export default function SuperAdminHomeScreen() {
                             <View style={styles.iconContainer}>
                                 <Users color={COLORS.black} size={32} />
                             </View>
-                            <View style={styles.shortcutContent}>
+                            <View style={styles.shortcutContent} >
                                 <Text style={styles.shortcutTitle}>Role Management</Text>
                                 <Text style={styles.shortcutDescription}>
                                     Manage user roles and permissions
