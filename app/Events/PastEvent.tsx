@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TextInput,
+    TouchableOpacity,
+    StatusBar,
+    SafeAreaView,
+    ViewStyle,
+    TextStyle,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Search, User } from 'lucide-react-native';
@@ -51,144 +54,186 @@ const mockPastEvents: PastEventData[] = [
 const WEEKDAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
 const DATES = [15, 16, 17, 18, 19];
 
+type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
+
+interface StyleSet {
+    safeArea: ViewStyle;
+    linearGradientContainer: ViewStyle;
+    scrollContainer: ViewStyle;
+    header: ViewStyle;
+    headerTitle: TextStyle;
+    headerContent: ViewStyle;
+    searchInputWrapper: ViewStyle;
+    searchInput: TextStyle;
+    searchButton: ViewStyle;
+    dateLabel: TextStyle;
+    todayLabel: TextStyle;
+    dateSelector: ViewStyle;
+    dateButton: ViewStyle;
+    dateButtonActive: ViewStyle;
+    dateNumber: TextStyle;
+    dateDay: TextStyle;
+    dateTextActive: TextStyle;
+    tabSelectorStickyWrapper: ViewStyle;
+    tabSelector: ViewStyle;
+    tabActive: ViewStyle;
+    tabTextActive: TextStyle;
+    tabText: TextStyle;
+    whiteCard: ViewStyle;
+}
+
 export default function PastEvent() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(20);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleTabPress = (path: string, tab: any) => {
+  const handleTabPress = (path: string, tab: TabName) => {
     router.push(path as any);
   };
 
   return (
-    <LinearGradient
-      colors={['#000000', '#2C2B29', COLORS.goldAccent]}
-      locations={[0.0, 0.35, 0.6]}
-      style={styles.container}
-    >
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" />
 
-      {/* ⭐ Entire screen scrolls now */}
-      <ScrollView
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[2]} // tabSelector sticks at top
+      <LinearGradient
+        colors={['#000000', '#2C2B29', COLORS.goldAccent]}
+        locations={[0.0, 0.35, 0.6]}
+        style={styles.linearGradientContainer}
       >
-        {/* HEADER */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <ArrowLeft color={COLORS.white} size={24} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Event & Project</Text>
-          <TouchableOpacity>
-            <User color={COLORS.white} size={24} />
-          </TouchableOpacity>
-        </View>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          // 💡 FIX: Sticky index is 1 (Tab Selector)
+          stickyHeaderIndices={[1]} 
+        >
+          
+          {/* INDEX 0: Header + Content (Scrolls away) */}
+          <View>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <ArrowLeft color={COLORS.white} size={24} />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Event & Project</Text>
+              <TouchableOpacity>
+                <User color={COLORS.white} size={24} />
+              </TouchableOpacity>
+            </View>
 
-        {/* HEADER CONTENT */}
-        <View style={styles.headerContent}>
-          <View style={styles.searchInputWrapper}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search Event Here..."
-              placeholderTextColor={COLORS.greyText}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <TouchableOpacity style={styles.searchButton}>
-              <Search color={COLORS.white} size={20} />
-            </TouchableOpacity>
+            <View style={styles.headerContent}>
+              <View style={styles.searchInputWrapper}>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search Event Here..."
+                  placeholderTextColor={COLORS.greyText}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+                <TouchableOpacity style={styles.searchButton}>
+                  <Search color={COLORS.white} size={20} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.dateLabel}>November 20, 2025</Text>
+              <Text style={styles.todayLabel}>TODAY</Text>
+
+              <View style={styles.dateSelector}>
+                {DATES.map((date, index) => (
+                  <TouchableOpacity
+                    key={date}
+                    style={[
+                      styles.dateButton,
+                      selectedDate === date && styles.dateButtonActive,
+                    ]}
+                    onPress={() => setSelectedDate(date)}
+                  >
+                    <Text
+                      style={[
+                        styles.dateNumber,
+                        selectedDate === date && styles.dateTextActive,
+                      ]}
+                    >
+                      {date}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.dateDay,
+                        selectedDate === date && styles.dateTextActive,
+                      ]}
+                    >
+                      {WEEKDAYS[index]}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           </View>
 
-          <Text style={styles.dateLabel}>November 20, 2025</Text>
-          <Text style={styles.todayLabel}>TODAY</Text>
+          {/* INDEX 1: Sticky Tab Selector */}
+          <View style={styles.tabSelectorStickyWrapper}>
+              <View style={styles.tabSelector}>
+                <TouchableOpacity onPress={() => router.push('/Events/UpcomingEvent' as any)}>
+                  <Text style={styles.tabText}>Upcoming</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabActive}>
+                  <Text style={styles.tabTextActive}>Past</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/Events/MyEvent' as any)}>
+                  <Text style={styles.tabText}>My Event</Text>
+                </TouchableOpacity>
+              </View>
+          </View>
 
-          <View style={styles.dateSelector}>
-            {DATES.map((date, index) => (
-              <TouchableOpacity
-                key={date}
-                style={[
-                  styles.dateButton,
-                  selectedDate === date && styles.dateButtonActive,
-                ]}
-                onPress={() => setSelectedDate(date)}
-              >
-                <Text
-                  style={[
-                    styles.dateNumber,
-                    selectedDate === date && styles.dateTextActive,
-                  ]}
-                >
-                  {date}
-                </Text>
-                <Text
-                  style={[
-                    styles.dateDay,
-                    selectedDate === date && styles.dateTextActive,
-                  ]}
-                >
-                  {WEEKDAYS[index]}
-                </Text>
-              </TouchableOpacity>
+          {/* INDEX 2: White Card Content */}
+          <View style={styles.whiteCard}>
+            {mockPastEvents.map((event) => (
+              <PastEventCard key={event.id} event={event} />
             ))}
           </View>
-        </View>
-
-        {/* ⭐ Sticky Tab Selector */}
-        <View style={styles.tabSelector}>
-          <TouchableOpacity onPress={() => router.push('/Events/UpcomingEvent' as any)}>
-            <Text style={styles.tabText}>Upcoming</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabActive}>
-            <Text style={styles.tabTextActive}>Past</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/Events/MyEvent' as any)}>
-            <Text style={styles.tabText}>My Event</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* ⭐ White card now scrolls upward and expands */}
-        <View style={styles.whiteCard}>
-          {mockPastEvents.map((event) => (
-            <PastEventCard key={event.id} event={event} />
-          ))}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </LinearGradient>
 
       <BottomNav activeTab="events" onTabPress={handleTabPress} />
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-
+const styles = StyleSheet.create<StyleSet>({
+  safeArea: { 
+      flex: 1, 
+      backgroundColor: COLORS.black,
+      paddingTop: 5, 
+  },
+  linearGradientContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 50,
+    paddingTop: 12, 
     paddingBottom: 12,
   },
-
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.white,
   },
-
   headerContent: {
     paddingHorizontal: 16,
     paddingVertical: 16,
+    zIndex: 10,
   },
-
   searchInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
   },
-
   searchInput: {
     flex: 1,
     backgroundColor: COLORS.white,
@@ -197,34 +242,29 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
   },
-
   searchButton: {
     backgroundColor: COLORS.goldAccent,
     padding: 12,
     borderRadius: 8,
     marginLeft: 8,
   },
-
   dateLabel: {
     color: COLORS.white,
     fontSize: 14,
     opacity: 0.8,
     marginBottom: 4,
   },
-
   todayLabel: {
     color: COLORS.white,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 16,
   },
-
   dateSelector: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-
   dateButton: {
     backgroundColor: COLORS.oliveLight,
     borderRadius: 12,
@@ -236,59 +276,53 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
-
   dateButtonActive: {
     borderColor: COLORS.goldAccent,
     backgroundColor: 'rgba(139, 139, 103, 0.8)',
   },
-
   dateNumber: {
     color: COLORS.white,
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 2,
   },
-
   dateDay: {
     color: COLORS.white,
     fontSize: 10,
     fontWeight: '500',
   },
-
   dateTextActive: {
     color: COLORS.goldAccent,
   },
-
+  tabSelectorStickyWrapper: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+    paddingHorizontal: 16,
+    paddingTop: 8, 
+  },
   tabSelector: {
     flexDirection: 'row',
     gap: 24,
-   backgroundColor: 'rgba(0, 0, 0, 0.8)',  // small opacity so sticky looks good
     paddingVertical: 12,
-    paddingHorizontal: 16,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
   },
-
   tabActive: {
     borderBottomWidth: 3,
     borderBottomColor: COLORS.goldAccent,
     paddingBottom: 4,
   },
-
   tabTextActive: {
     color: COLORS.goldAccent,
     fontSize: 16,
     fontWeight: '600',
   },
-
   tabText: {
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '500',
   },
-
   whiteCard: {
     flex: 1,
     marginTop: 16,
