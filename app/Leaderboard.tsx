@@ -7,16 +7,15 @@ import {
     FlatList,
     TouchableOpacity,
     StatusBar,
-    SafeAreaView,
+    SafeAreaView, // FIX 1: Ensure SafeAreaView is imported
     Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-// NOTE: You must replace '@/components/BottomNav' with the actual path to your BottomNav file.
 import BottomNav from '@/components/BottomNav'; 
 
-// --- START: Types and Constants copied from BottomNav for compilation ---
+// --- Types and Constants ---
 type TabName = 'home' | 'shop' | 'leaderboard' | 'notifications' | 'events';
 const EXPO_ROUTER_PATHS: Record<TabName, string> = {
     home: '/Feeds/NationalFeed',
@@ -25,7 +24,6 @@ const EXPO_ROUTER_PATHS: Record<TabName, string> = {
     notifications: '/Feeds/Notification',
     events: '/Events/UpcomingEvent',
 };
-// --- END: Types and Constants ---
 
 const COLORS = {
     black: '#000000',
@@ -36,7 +34,6 @@ const COLORS = {
     greyText: '#999999',
     lightGrey: '#F0F0F0',
     goldAccent: '#FFC80A',
-    // Added for the red circle color from the image:
     redCircle: '#8B0000', 
 };
 
@@ -52,13 +49,9 @@ interface Club {
     logoUri: string;
 }
 
-// Updated TOP_3_CLUBS to match image text and colors
 const TOP_3_CLUBS: TopClub[] = [
-    // Position 1 (Center) - Red Circle, Gold Badge
     { position: 1, name: 'Leo District 306 A2', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
-    // Position 2 (Left) - Red Circle, Gold Badge
     { position: 2, name: 'Leo District 306 D11', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
-    // Position 3 (Right) - Red Circle, Gold Badge
     { position: 3, name: 'Leo District 306 D01', logoUri: 'https://placehold.co/80x80/8B0000/FFF?text=A2' }, 
 ];
 
@@ -75,7 +68,6 @@ const CLUBS_DATA: Club[] = [
     { rank: 10, name: 'Leo Club of Kandy', logoUri: 'https://placehold.co/40x40/4682B4/FFF?text=K' },
 ];
 
-// --- NEW PODIUM COMPONENT ---
 interface PodiumPlaceProps {
     club: TopClub;
     sizeStyle: any;
@@ -88,25 +80,19 @@ const PodiumPlace = ({ club, sizeStyle, rankStyle, containerStyle }: PodiumPlace
         style={[styles.podiumItem, containerStyle]}
         onPress={() => router.push('/Community/Community')}
     >
-        {/* Position Badge */}
         <View style={[styles.positionBadge, rankStyle]}>
             <Text style={styles.positionText}>{club.position}</Text>
         </View>
-
-        {/* Logo (The Red Circle with "A2" text) */}
         <Image
             source={{ uri: club.logoUri }}
             style={[styles.podiumLogo, sizeStyle]}
         />
     </TouchableOpacity>
 );
-// ----------------------------
 
 export default function LeaderboardScreen() {
-    // 1. State for active tab, defaulting to 'leaderboard'
     const [activeTab, setActiveTab] = useState<TabName>('leaderboard');
 
-    // 2. Tab Press Handler: Navigates using Expo Router and updates the state
     const handleTabPress = (path: string, tab: TabName) => {
         const navigationPath = EXPO_ROUTER_PATHS[tab];
         if (navigationPath && tab !== activeTab) {
@@ -115,7 +101,6 @@ export default function LeaderboardScreen() {
         setActiveTab(tab);
     };
     
-    // Helper to find data by position (1, 2, or 3)
     const getTopClub = (position: 1 | 2 | 3) => TOP_3_CLUBS.find(club => club.position === position);
 
     const renderClubItem = ({ item }: { item: Club }) => (
@@ -131,90 +116,87 @@ export default function LeaderboardScreen() {
     );
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        // FIX 2: Use SafeAreaView as the root with Black background (for the top notch area)
+        <SafeAreaView style={styles.safeArea}>
+            {/* FIX 3: Clean StatusBar without transparency hacks */}
+            <StatusBar barStyle="light-content" />
 
-            {/* Top Section with Gradient */}
-            <LinearGradient
-                colors={[COLORS.black, '#3D3A2E', COLORS.goldDark]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.topSection}
-            >
-                {/* Header */}
-                <SafeAreaView>
+            {/* FIX 4: Wrapper View with White background for the main content */}
+            <View style={styles.container}>
+                
+                {/* Top Section with Gradient */}
+                <LinearGradient
+                    colors={[COLORS.black, '#3D3A2E', COLORS.goldDark]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.topSection}
+                >
+                    {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => router.back()}>
                             <Ionicons name="arrow-back" size={28} color={COLORS.white} />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Leader Board</Text>
                     </View>
-                </SafeAreaView>
 
-                {/* Top 3 Podium */}
-                <View style={styles.podiumContainer}>
-                    
-                    {/* Position 2 - Left */}
-                    <PodiumPlace 
-                        club={getTopClub(2)!} 
-                        sizeStyle={styles.secondLogo} 
-                        rankStyle={styles.secondBadge} 
-                        containerStyle={styles.podiumSecond}
+                    {/* Top 3 Podium */}
+                    <View style={styles.podiumContainer}>
+                        {/* Position 2 - Left */}
+                        <PodiumPlace 
+                            club={getTopClub(2)!} 
+                            sizeStyle={styles.secondLogo} 
+                            rankStyle={styles.secondBadge} 
+                            containerStyle={styles.podiumSecond}
+                        />
+                        {/* Position 1 - Center */}
+                        <PodiumPlace 
+                            club={getTopClub(1)!} 
+                            sizeStyle={styles.firstLogo} 
+                            rankStyle={styles.firstBadge} 
+                            containerStyle={styles.podiumFirst}
+                        />
+                        {/* Position 3 - Right */}
+                        <PodiumPlace 
+                            club={getTopClub(3)!} 
+                            sizeStyle={styles.thirdLogo} 
+                            rankStyle={styles.thirdBadge} 
+                            containerStyle={styles.podiumThird}
+                        />
+                    </View>
+                </LinearGradient>
+
+                {/* Bottom Rankings Card */}
+                <View style={styles.rankingsCard}>
+                    <FlatList
+                        data={CLUBS_DATA}
+                        renderItem={renderClubItem}
+                        keyExtractor={(item) => item.rank.toString()}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.listContent}
+                        scrollEnabled={true} 
                     />
-
-
-                    {/* Position 1 - Center */}
-                    <PodiumPlace 
-                        club={getTopClub(1)!} 
-                        sizeStyle={styles.firstLogo} 
-                        rankStyle={styles.firstBadge} 
-                        containerStyle={styles.podiumFirst}
-                    />
-
-
-                    {/* Position 3 - Right */}
-                    <PodiumPlace 
-                        club={getTopClub(3)!} 
-                        sizeStyle={styles.thirdLogo} 
-                        rankStyle={styles.thirdBadge} 
-                        containerStyle={styles.podiumThird}
-                    />
-
                 </View>
-            </LinearGradient>
 
-            {/* Bottom Rankings Card */}
-            {/* Changed TouchableOpacity wrapping FlatList to View, as scrolling content 
-                should not be wrapped in a navigation button. Added a separate touchable 
-                area if navigation is required. For now, removed external touchable. */}
-            <View style={styles.rankingsCard}>
-                <FlatList
-                    data={CLUBS_DATA}
-                    renderItem={renderClubItem}
-                    keyExtractor={(item) => item.rank.toString()}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.listContent}
-                    scrollEnabled={true} // Ensure scrolling is enabled inside this view
-                />
+                {/* Integrated BottomNav */}
+                <View style={styles.bottomNavContainer}>
+                    <BottomNav 
+                        activeTab={activeTab} 
+                        onTabPress={handleTabPress} 
+                    />
+                </View>
             </View>
-
-
-            {/* 3. Integrated BottomNav */}
-            <View style={styles.bottomNavContainer}>
-                <BottomNav 
-                    activeTab={activeTab} 
-                    onTabPress={handleTabPress} 
-                />
-            </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
-// ----------------------------------------------------------------------
-// --- STYLES ---
-// ----------------------------------------------------------------------
-
 const styles = StyleSheet.create({
+    // FIX 5: Updated safeArea style to handle the top notch background
+    safeArea: {
+        flex: 1,
+        backgroundColor: COLORS.black, // Matches the top gradient
+        paddingTop: 5, // Small manual adjustment
+    },
+    // FIX 6: Updated container to handle the white background for the bottom
     container: {
         flex: 1,
         backgroundColor: COLORS.white,
@@ -238,7 +220,7 @@ const styles = StyleSheet.create({
     podiumContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'flex-end', // Aligns items to the bottom baseline
+        alignItems: 'flex-end', 
         paddingHorizontal: 20,
         marginTop: 20,
     },
@@ -247,17 +229,16 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
     },
     
-    // --- Podium Positioning (Height Difference) ---
+    // --- Podium Positioning ---
     podiumFirst: {
-        marginBottom: 0, // Sits highest
+        marginBottom: 0, 
     },
     podiumSecond: {
-        marginBottom: 20, // Sits lower
+        marginBottom: 20, 
     },
     podiumThird: {
-        marginBottom: 20, // Sits lower
+        marginBottom: 20, 
     },
-    // ---------------------------------------------
     
     positionBadge: {
         backgroundColor: COLORS.goldMid,
@@ -266,63 +247,48 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        // Absolute positioning to place it on top of the logo circle
         zIndex: 10, 
         position: 'absolute', 
-        top: -16, // Adjusted to sit just above the circle's top edge
+        top: -16, 
     },
     firstBadge: {
         width: 36,
         height: 36,
         borderRadius: 18,
     },
-    secondBadge: {
-        // No change
-    },
-    thirdBadge: {
-        // No change
-    },
+    secondBadge: {},
+    thirdBadge: {},
     positionText: {
         fontSize: 16,
         fontWeight: '800',
         color: COLORS.white,
     },
 
-    // --- Logo Styles (Size Difference) ---
+    // --- Logo Styles ---
     podiumLogo: {
-        // Base style for all logos (Red circle from image)
         backgroundColor: COLORS.redCircle,
         width: 80,
         height: 80,
         borderRadius: 40,
         borderWidth: 3,
         borderColor: COLORS.white,
-        // The image itself is the text "A2" with a transparent background in the placeholder URL
         resizeMode: 'contain', 
     },
     firstLogo: {
-        // Largest for 1st place
         width: 90,
         height: 90,
         borderRadius: 45,
     },
-    secondLogo: {
-        // No change, uses podiumLogo size
-    },
-    thirdLogo: {
-        // No change, uses podiumLogo size
-    },
-    // ------------------------------------
+    secondLogo: {},
+    thirdLogo: {},
     
     rankingsCard: {
-        // Flex 1 to ensure it takes up the remaining space
         flex: 1, 
         backgroundColor: COLORS.white,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         marginTop: -20,
         paddingTop: 20,
-        // Reduced bottom padding to account for the fixed BottomNav
         paddingBottom: 100, 
     },
     listContent: {
@@ -363,7 +329,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        // Note: The logo in the list is an initial circle, using background color to simulate the placeholder
     },
     clubLogo: {
         width: 40,
@@ -376,6 +341,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 100, // Ensure it's on top of the scrollable content
+        zIndex: 100, 
     },
 });
