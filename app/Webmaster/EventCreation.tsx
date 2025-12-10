@@ -43,7 +43,8 @@ export default function CreateEventScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity style={styles.backButton} 
+          activeOpacity={0.7} onPress={() => router.back()} >
             <ChevronLeft color="#000000" size={24} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Create Event</Text>

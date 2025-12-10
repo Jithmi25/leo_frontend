@@ -1,17 +1,7 @@
 import React from 'react';
-// 💡 FIX 1: Import Stack to locally hide the header
-import { router, Stack } from 'expo-router'; 
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  Image,
-  // 💡 FIX 2: Switch to standard SafeAreaView to match your other working screens
-  SafeAreaView, 
-  StatusBar
-} from 'react-native';
+import { router } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity,Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import ProfileCard from '@/components/AdminFeatureCard/ProfileCard';
 import PostToFeedCard from '@/components/AdminFeatureCard/PostToFeedCard';
@@ -24,6 +14,7 @@ import ClubAnalysisChart from '@/components/Analysis/ClubAnalysisChart';
 import PollAnalysisChart from '@/components/Analysis/PollAnalysisChart';
 import PostImpressionChart from '@/components/Analysis/PostImpressionChart';
 import PreviousPostCard from '@/components/Analysis/PreviousPostChart';
+
 
 const COLORS = {
   black: '#000000',
@@ -92,14 +83,7 @@ const mockPostImpressionData = [
 export default function AdminOverviewScreen() {
 
   return (
-    // 💡 FIX 3: Use SafeAreaView as the root with the correct style
-    <SafeAreaView style={styles.safeArea}>
-      {/* 💡 FIX 4: Explicitly hide the header for this screen */}
-      <Stack.Screen options={{ headerShown: false }} />
-      
-      {/* 💡 FIX 5: Set status bar to dark-content since the background is white */}
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
@@ -123,9 +107,19 @@ export default function AdminOverviewScreen() {
               }}
               style={styles.profileImage}
               resizeMode="cover"
+              
             />
           </TouchableOpacity>
         </View>
+
+
+        {/* <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton}>
+            <ChevronLeft color="#000000" size={24} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Admin Overview</Text>
+          <View style={styles.placeholder} />
+        </View> */}
 
         <ProfileCard
           name={mockProfile.name}
@@ -138,71 +132,74 @@ export default function AdminOverviewScreen() {
 
         <View style={styles.grid}>
           <View style={styles.gridItem}>
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/PostCreation')} 
+  >
+    <PostToFeedCard
+      title={mockPostFeedStats.title}
+      status={mockPostFeedStats.status}
+      imageUrl={mockPostFeedStats.imageUrl}
+      likePercentage={mockPostFeedStats.likePercentage}
+      commentPercentage={mockPostFeedStats.commentPercentage}
+    />
+  </TouchableOpacity>
+</View>
+
+          <View style={styles.gridItem}>
             <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/PostCreation')} 
-            >
-              <PostToFeedCard
-                title={mockPostFeedStats.title}
-                status={mockPostFeedStats.status}
-                imageUrl={mockPostFeedStats.imageUrl}
-                likePercentage={mockPostFeedStats.likePercentage}
-                commentPercentage={mockPostFeedStats.commentPercentage}
-              />
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/EventCreation')} 
+  >
+            <LeaderRoleManagementCard />
+            </TouchableOpacity>
+          </View>
+
+
+
+          <View style={styles.gridItem}>
+            <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/EventRegistration')} 
+  >
+            <EventsCard receivedCount={mockEventStats.receivedCount} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.gridItem}>
+
+            <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/PollCreation')} 
+  >
+            <CreatePollCard
+              title={mockPollStats.title}
+              status={mockPollStats.status}
+              imageUrl={mockPollStats.imageUrl}
+              agreePercentage={mockPollStats.agreePercentage}
+              disagreePercentage={mockPollStats.disagreePercentage}
+            />
             </TouchableOpacity>
           </View>
 
           <View style={styles.gridItem}>
             <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/EventCreation')} 
-            >
-              <LeaderRoleManagementCard />
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/WMNotifications')} 
+  >
+            <YouWereTaggedCard
+              postsCount={mockTagNotifications.postsCount}
+              messagesCount={mockTagNotifications.messagesCount}
+            />
             </TouchableOpacity>
           </View>
 
           <View style={styles.gridItem}>
             <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/EventRegistration')} 
-            >
-              <EventsCard receivedCount={mockEventStats.receivedCount} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.gridItem}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/PollCreation')} 
-            >
-              <CreatePollCard
-                title={mockPollStats.title}
-                status={mockPollStats.status}
-                imageUrl={mockPollStats.imageUrl}
-                agreePercentage={mockPollStats.agreePercentage}
-                disagreePercentage={mockPollStats.disagreePercentage}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.gridItem}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/WMNotifications')} 
-            >
-              <YouWereTaggedCard
-                postsCount={mockTagNotifications.postsCount}
-                messagesCount={mockTagNotifications.messagesCount}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.gridItem}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.push('/Webmaster/WMLeaderboard')} 
-            >
-              <LeaderboardCard />
+    activeOpacity={0.8}
+    onPress={() => router.push('/Webmaster/WMLeaderboard')} 
+  >
+            <LeaderboardCard />
             </TouchableOpacity>
           </View>
         </View>
@@ -233,23 +230,15 @@ export default function AdminOverviewScreen() {
 }
 
 const styles = StyleSheet.create({
-  // 💡 FIX 6: Replaced 'container' with 'safeArea' to match the pattern
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
+
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 0, // Removed extra padding since scrollView has horizontal padding
+    paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: COLORS.headerBg,
-    // Removed border for cleaner look, or keep if you prefer
     borderBottomWidth: 1,
     borderBottomColor: COLORS.lightGrey,
   },
@@ -288,6 +277,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.goldAccent,
   },
+
+
+
+
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+
   backButton: {
     width: 40,
     height: 40,
@@ -307,7 +309,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
     marginBottom: 16,
-    marginTop: 10, // Added slight top margin for spacing
   },
   gridItem: {
     width: '48%',

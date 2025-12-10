@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { router } from 'expo-router';
+// 💡 FIX 1: Import Stack to control the header visibility
+import { router, Stack } from 'expo-router';
 import {
     View,
     Text,
@@ -58,6 +59,9 @@ export default function CustomizeProfileScreen() {
 
     return (
         <View style={styles.container}>
+            {/* 💡 FIX 2: Explicitly hide the header for this screen */}
+            <Stack.Screen options={{ headerShown: false }} />
+
             <LinearGradient
                 colors={[COLORS.black, '#2C2B29', COLORS.goldMid]}
                 locations={[0.0, 0.35, 0.6]}
