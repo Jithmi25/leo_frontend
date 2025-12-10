@@ -1,23 +1,24 @@
-import React from 'react';
-import { router } from 'expo-router';
-
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image, 
-  StatusBar,
-  ViewStyle, // Import types for styling
-  TextStyle,
-  ImageStyle,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  ImageStyle,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 
-// ✔ Correct Asset Imports
-// Note: In a real project, these require statements might need adjustments 
-// or TypeScript definitions if you're not using a specific asset loader configuration.
+// Asset Imports
 const logo = require('../../assets/images/logo.png');
 const googleIcon = require('../../assets/images/google_icon.png');
 
@@ -26,8 +27,9 @@ const COLORS = {
   black: '#000000',
   white: '#FFFFFF',
   goldDark: '#DAA520',
-  goldMid: '#FFC72C', // Used for the main gold and text color
+  goldMid: '#FFC72C',
   yellowBase: '#FFC72C',
+  errorRed: '#FF4444',
 };
 
 // Define a type for the styles object
@@ -41,28 +43,83 @@ interface Style {
   logo: ImageStyle;
   bottomSection: ViewStyle;
   signInButton: ViewStyle;
+  signInButtonDisabled: ViewStyle;
   googleIcon: ImageStyle;
   signInButtonText: TextStyle;
+  errorText: TextStyle;
+  loadingContainer: ViewStyle;
 }
 
 const SignupScreen = (): React.JSX.Element => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { signIn, isLoading: googleLoading, error: googleError, result: googleResult, clearError } = useGoogleAuth();
+  const { login, isLoading: authLoading, error: authError, clearError: clearAuthError } = useAuth();
 
-  // const handleSignIn = (): void => {
-  //   console.log('Sign In With Google pressed');
-  // };
+  // Handle Google Sign-In result
+  useEffect(() => {
+    const handleGoogleSignIn = async () => {
+      if (googleResult?.idToken && !isProcessing) {
+        setIsProcessing(true);
+        try {
+          // Send ID token to backend for verification
+          await login(googleResult.idToken);
+          
+          // Navigate to success screen on successful login
+          router.replace('/Feed');
+        } catch (error: any) {
+          // Check if the error is "not registered"
+          if (error.message?.includes('not a registered member') || 
+              error.message?.includes('not registered')) {
+            router.replace('/Feedbacks/AccNotReg');
+          } else {
+            Alert.alert(
+              'Login Failed',
+              error.message || 'An error occurred during login. Please try again.',
+              [{ text: 'OK', onPress: () => clearAuthError() }]
+            );
+          }
+        } finally {
+          setIsProcessing(false);
+        }
+      }
+    };
 
-  const handleGoBack = (): void => {
-    console.log('Back button pressed');
+    handleGoogleSignIn();
+  }, [googleResult]);
+
+  // Handle Google Sign-In errors
+  useEffect(() => {
+    if (googleError && googleError !== 'Sign-In was cancelled') {
+      Alert.alert(
+        'Sign-In Error',
+        googleError,
+        [{ text: 'OK', onPress: () => clearError() }]
+      );
+    }
+  }, [googleError]);
+
+  const handleSignIn = async (): Promise<void> => {
+    try {
+      clearError();
+      clearAuthError();
+      await signIn();
+    } catch (error) {
+      console.error('Sign-in error:', error);
+    }
   };
 
+  const handleGoBack = (): void => {
+    router.back();
+  };
+
+  const isLoading = googleLoading || authLoading || isProcessing;
+
   return (
-    // 1. Full-screen LinearGradient replaces the primary View
     <LinearGradient
-      colors={[COLORS.black, '#2C2B29', COLORS.goldMid]} // Transition from black to a dark-grey mid-point, ending in gold
-      locations={[0.0, 0.5, 1.0]} // Specifies the color stop points (Top, Middle, Bottom)
+      colors={[COLORS.black, '#2C2B29', COLORS.goldMid]}
+      locations={[0.0, 0.5, 1.0]}
       style={styles.container}
     >
-      {/* Set status bar to transparent/translucent for gradient coverage */}
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
       {/* Back Button */}
@@ -79,19 +136,36 @@ const SignupScreen = (): React.JSX.Element => {
         <Image source={logo} style={styles.logo} resizeMode="contain" />
       </View>
 
-      {/* Bottom Section (Positioning container for the button) */}
+      {/* Bottom Section */}
       <View style={styles.bottomSection}>
+        {/* Error Message */}
+        {(googleError || authError) && (
+          <Text style={styles.errorText}>
+            {googleError || authError}
+          </Text>
+        )}
+
         {/* Sign In Button */}
         <TouchableOpacity 
-          style={styles.signInButton}
-          onPress={() => router.replace('../../Auth/ChooseAcc')}
+          style={[styles.signInButton, isLoading && styles.signInButtonDisabled]}
+          onPress={handleSignIn}
           activeOpacity={0.8}
+          disabled={isLoading}
         >
-          <Image 
-            source={googleIcon}
-            style={styles.googleIcon}
-          />
-          <Text style={styles.signInButtonText}>Sign In With Google</Text>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.black} />
+              <Text style={styles.signInButtonText}>Signing In...</Text>
+            </View>
+          ) : (
+            <>
+              <Image 
+                source={googleIcon}
+                style={styles.googleIcon}
+              />
+              <Text style={styles.signInButtonText}>Sign In With Google</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -99,11 +173,9 @@ const SignupScreen = (): React.JSX.Element => {
 };
 
 // --- Styles ---
-// Cast the StyleSheet.create result to the defined Style interface
 const styles = StyleSheet.create<Style>({
   container: {
     flex: 1,
-    // The background is now handled by the LinearGradient colors prop
   },
 
   backButton: {
@@ -149,44 +221,57 @@ const styles = StyleSheet.create<Style>({
 
   bottomSection: {
     height: '35%',
-    // Removed explicit background color here, as the full-screen gradient provides the gold color
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     paddingBottom: 50,
   },
 
-  // The original gradientOverlay style is removed as it's no longer needed
-
   signInButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',   // <-- Centers icon + text together
-  gap: 10,                    // <-- Clean spacing between icon & text
-  backgroundColor: COLORS.white,
-  paddingVertical: 15,
-  paddingHorizontal: 30,
-  borderRadius: 50,
-  width: '80%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: COLORS.white,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 50,
+    width: '80%',
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
+  },
 
-  // Shadows
-  shadowColor: COLORS.black,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.3,
-  shadowRadius: 5,
-  elevation: 8,
-},
+  signInButtonDisabled: {
+    opacity: 0.7,
+  },
 
-googleIcon: {
-  width: 24,
-  height: 24,
-},
+  googleIcon: {
+    width: 24,
+    height: 24,
+  },
 
-signInButtonText: {
-  color: COLORS.black,
-  fontSize: 18,
-  fontWeight: '600',
-},
-}as const); // Use 'as const' to improve type safety for static styles
+  signInButtonText: {
+    color: COLORS.black,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+
+  errorText: {
+    color: COLORS.errorRed,
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 20,
+  },
+
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+} as const);
 
 export default SignupScreen;

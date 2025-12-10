@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StatusBar,
-  FlatList,
-  Dimensions,
-} from 'react-native';
+import PhotoCard from '@/components/Events/PhotoCard';
+import { createClient } from "@supabase/supabase-js";
+import Constants from "expo-constants";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Upload } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import PhotoCard from '@/components/Events/PhotoCard';
-import Constants from "expo-constants";
-import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-const supabaseUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl!;
+const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey!;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const { width } = Dimensions.get('window');

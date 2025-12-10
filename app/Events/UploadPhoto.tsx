@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
 import Constants from "expo-constants";
+import { useState } from 'react';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Image,
-  StatusBar,
-  Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { createClient } from '@supabase/supabase-js';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, Image as ImageIcon, Upload } from 'lucide-react-native';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const COLORS = {
   white: '#FFFFFF',
@@ -25,9 +25,9 @@ const COLORS = {
   greyText: '#A0A0A0',
 };
 
-const { EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY } =
-  Constants.expoConfig?.extra ?? {};
-const supabase = createClient(EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY);
+const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl!;
+const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 
 export default function UploadPhoto() {
