@@ -213,6 +213,7 @@ const CARD_TOP_POSITION = 280;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: StatusBar.currentHeight || 0
     },
     gradientBg: {
         flex: 1,

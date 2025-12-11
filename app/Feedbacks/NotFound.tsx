@@ -1,6 +1,6 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,StatusBar } from 'react-native';
 
 const NotFound: React.FC = () => {
   return (
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    paddingTop: StatusBar.currentHeight || 0
   },
   title: {
     fontSize: 48,

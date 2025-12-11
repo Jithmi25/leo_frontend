@@ -202,7 +202,7 @@ const styles = StyleSheet.create<StyleSet>({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.black,
-    paddingTop: 5,
+    paddingTop: StatusBar.currentHeight || 0
   },
   linearGradientContainer: {
     flex: 1,

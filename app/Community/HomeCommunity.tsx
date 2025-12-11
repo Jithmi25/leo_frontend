@@ -8,6 +8,7 @@ import {
   StyleSheet,
   FlatList,
   Modal,
+  StatusBar
 } from 'react-native';
 import { ArrowLeft, Users, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import CommunityCard from '@/components/Homeclub/CommunityCard'; // Updated import path
@@ -350,6 +351,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingTop: StatusBar.currentHeight || 0
   },
   header: {
     backgroundColor: '#FFFFFF',

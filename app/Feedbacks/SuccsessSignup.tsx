@@ -94,7 +94,8 @@ const SuccessScreen = ({ /* navigateToHome */ }: SuccessScreenProps): React.JSX.
 const styles = StyleSheet.create<Style>({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white, // Set the background to white
+    backgroundColor: COLORS.white,
+    paddingTop: StatusBar.currentHeight || 0 // Set the background to white
   },
   content: {
     flex: 1,

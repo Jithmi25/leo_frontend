@@ -103,6 +103,7 @@ const SignupScreen = (): React.JSX.Element => {
 const styles = StyleSheet.create<Style>({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight || 0
   },
 
   backButton: {

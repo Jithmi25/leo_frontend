@@ -279,6 +279,7 @@ const styles = StyleSheet.create<Style>({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.white,
+    paddingTop: StatusBar.currentHeight || 0
   },
   container: {
     flex: 1,

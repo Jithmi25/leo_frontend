@@ -14,16 +14,28 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      {/* 💡 CRITICAL FIX: 
+         Move 'headerShown: false' here to screenOptions.
+         This forces ALL screens (Webmaster, Events, Profile, etc.) 
+         to hide their headers by default without listing them one by one.
+      */}
+      <Stack screenOptions={{ headerShown: false }}>
+        
+        {/* You can still keep these if you need specific settings, 
+            but they now inherit headerShown: false automatically. */}
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="Webmaster" />
+
+        {/* The modal is the exception, so we override it here */}
         <Stack.Screen 
-          name="(tabs)" 
+          name="modal" 
           options={{ 
-            headerShown: false, 
-            title: ''  // Explicitly clear the title to remove any default file path display
+            presentation: 'modal', 
+            title: 'Modal',
+            headerShown: true // Only show header for modal
           }} 
         />
-        <Stack.Screen name="Webmaster" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

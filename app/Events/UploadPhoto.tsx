@@ -149,6 +149,7 @@ export default function UploadPhoto() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight || 0
   },
 
   header: {

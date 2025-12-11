@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF', 
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: StatusBar.currentHeight || 0
   },
   content: {
     alignItems: 'center', 

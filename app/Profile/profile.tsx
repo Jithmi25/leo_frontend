@@ -178,7 +178,7 @@ const AVATAR_SIZE = 120;
 const BADGE_ITEM_WIDTH = (width - CARD_MARGIN_HORIZONTAL * 2 - 30) / 2;
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.white },
+    container: { flex: 1, backgroundColor: COLORS.white, paddingTop: StatusBar.currentHeight || 0 },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',

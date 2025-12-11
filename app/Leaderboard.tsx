@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: COLORS.black, // Matches the top gradient
-        paddingTop: 5, // Small manual adjustment
+        paddingTop: StatusBar.currentHeight || 0 // Small manual adjustment
     },
     // FIX 6: Updated container to handle the white background for the bottom
     container: {
