@@ -6,19 +6,28 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          {/* Auth screens */}
+          <Stack.Screen name="Auth/Signup" />
+          <Stack.Screen name="Auth/ChooseAcc" />
+          
+          {/* Main screens based on roles */}
+          <Stack.Screen name="Feed" />
+          <Stack.Screen name="Feeds/SearchProfile" />
+          <Stack.Screen name="SuperAdmin/Home" />
+          
+          {/* Onboarding */}
+          <Stack.Screen name="Onboarding/index" />
+          
+          {/* Feedback screens */}
+          <Stack.Screen name="Feedbacks/SuccsessSignup" />
+          <Stack.Screen name="Feedbacks/AccNotReg" />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

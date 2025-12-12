@@ -1,166 +1,47 @@
-
-// import { Platform, StyleSheet } from 'react-native';
-
-// import { HelloWave } from '@/components/hello-wave';
-// import ParallaxScrollView from '@/components/parallax-scroll-view';
-// import { ThemedText } from '@/components/themed-text';
-// import { ThemedView } from '@/components/themed-view';
-// import { Link } from 'expo-router';
-
-// export default function HomeScreen() {
-//   return (
-//     <ParallaxScrollView
-//       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-//       headerImage={
-//         <Image
-//           source={require('@/assets/images/partial-react-logo.png')}
-//           style={styles.reactLogo}
-//         />
-//       }>
-//       <ThemedView style={styles.titleContainer}>
-//         <ThemedText type="title">Welcome!!!!!</ThemedText>
-//         <HelloWave />
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-//         <ThemedText>
-//           Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-//           Press{' '}
-//           <ThemedText type="defaultSemiBold">
-//             {Platform.select({
-//               ios: 'cmd + d',
-//               android: 'cmd + m',
-//               web: 'F12',
-//             })}
-//           </ThemedText>{' '}
-//           to open developer tools.
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <Link href="/modal">
-//           <Link.Trigger>
-//             <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-//           </Link.Trigger>
-//           <Link.Preview />
-//           <Link.Menu>
-//             <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-//             <Link.MenuAction
-//               title="Share"
-//               icon="square.and.arrow.up"
-//               onPress={() => alert('Share pressed')}
-//             />
-//             <Link.Menu title="More" icon="ellipsis">
-//               <Link.MenuAction
-//                 title="Delete"
-//                 icon="trash"
-//                 destructive
-//                 onPress={() => alert('Delete pressed')}
-//               />
-//             </Link.Menu>
-//           </Link.Menu>
-//         </Link>
-
-//         <ThemedText>
-//           {`Tap the Explore tab to learn more about what's included in this starter app.`}
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-//         <ThemedText>
-//           {`When you're ready, run `}
-//           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-//           <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-//           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-//           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-//         </ThemedText>
-//       </ThemedView>
-//     </ParallaxScrollView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   titleContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 8,
-//   },
-//   stepContainer: {
-//     gap: 8,
-//     marginBottom: 8,
-//   },
-//   reactLogo: {
-//     height: 178,
-//     width: 290,
-//     bottom: 0,
-//     left: 0,
-//     position: 'absolute',
-//   },
-// });
 import React, { useEffect } from 'react';
-import { View, Image, Text, StyleSheet, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router'; // 1. Import Router
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { isAuthenticated } from '../../services/authService';
 
-const logoImage = require('../../assets/images/logo.png'); 
-// Note: Check if your path is '../assets' or '../../assets'. 
-// Since this file is in 'app/', usually '../assets' is correct.
-
-const SplashScreen = () => {
-  const router = useRouter(); // 2. Initialize Router
+const Index = () => {
+  const router = useRouter();
 
   useEffect(() => {
-    // 3. Start the timer
-    const timer = setTimeout(() => {
-      
-      // 4. Navigate to Onboarding
-      // Make sure your onboarding file is named 'onboarding.tsx' inside the 'app' folder
-      router.replace('/Onboarding');
- 
-      
-    }, 4000); // 4000 milliseconds = 4 Seconds
+    const checkAuthAndRedirect = async () => {
+      try {
+        const authenticated = await isAuthenticated();
+        if (authenticated) {
+          router.replace('/Feed');
+        } else {
+          router.replace('/Onboarding');
+        }
+      } catch (error) {
+        console.error("Error checking authentication status:", error);
+        // Handle error, maybe navigate to an error screen or Onboarding as a fallback
+        router.replace('/Onboarding');
+      }
+    };
 
-    // Cleanup the timer if the user closes the app before 4 seconds
+    // Give a small delay to prevent splash screen flickering
+    const timer = setTimeout(checkAuthAndRedirect, 100);
+
     return () => clearTimeout(timer);
-  }
-  
-  , []);
+  }, [router]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Image 
-          source={logoImage} 
-          style={styles.logo}
-          resizeMode="contain" 
-        />
-        <Text style={styles.title}>
-          LeoConnect Sri Lanka
-        </Text>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#B8860B" />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    backgroundColor: '#FFFFFF', 
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  content: {
-    alignItems: 'center', 
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 200, 
-    height: 200, 
-    marginBottom: 20, 
-  },
-  title: {
-    fontSize: 24,
-    color: '#B8860B', 
-    fontWeight: '600',
+    backgroundColor: '#FFFFFF',
   },
 });
 
-export default SplashScreen;
+export default Index;

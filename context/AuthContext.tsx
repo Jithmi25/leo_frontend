@@ -13,7 +13,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (idToken: string) => Promise<void>;
+  login: (idToken: string) => Promise<User>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Login with Google ID Token
-  const login = async (idToken: string): Promise<void> => {
+  const login = async (idToken: string): Promise<User> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -69,6 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       setUser(response.user);
       setIsAuthenticated(true);
+      return response.user;
     } catch (err: any) {
       setError(err.message || 'Login failed');
       throw err;

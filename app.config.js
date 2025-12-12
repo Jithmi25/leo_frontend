@@ -1,3 +1,6 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
 export default {
   expo: {
     owner: "22cis0318jith",

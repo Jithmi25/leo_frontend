@@ -52,8 +52,22 @@ interface Style {
 
 const SignupScreen = (): React.JSX.Element => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { signIn, isLoading: googleLoading, error: googleError, result: googleResult, clearError } = useGoogleAuth();
+  const { signIn, isLoading: googleLoading, error: googleError, result: googleResult, clearError, request } = useGoogleAuth();
   const { login, isLoading: authLoading, error: authError, clearError: clearAuthError } = useAuth();
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/health');
+        const data = await response.json();
+        console.log('Backend Health Check:', data);
+      } catch (error) {
+        console.error('Backend Health Check Failed:', error);
+        Alert.alert('Backend Error', 'Could not connect to the server. Please ensure the backend is running.');
+      }
+    };
+    checkHealth();
+  }, []);
 
   // Handle Google Sign-In result
   useEffect(() => {
@@ -62,10 +76,29 @@ const SignupScreen = (): React.JSX.Element => {
         setIsProcessing(true);
         try {
           // Send ID token to backend for verification
-          await login(googleResult.idToken);
+          const loggedInUser = await login(googleResult.idToken);
           
-          // Navigate to success screen on successful login
-          router.replace('/Feed');
+          // Role-based redirection
+          if (loggedInUser) {
+            switch (loggedInUser.role) {
+              case 'webmaster':
+                router.replace('/Feed');
+                break;
+              case 'superAdmin':
+                router.replace('/SuperAdmin/Home');
+                break;
+              case 'member':
+                router.replace('/Feeds/SearchProfile');
+                break;
+              default:
+                // Fallback to a default success screen if role is not recognized
+                router.replace('/Feedbacks/SuccsessSignup');
+                break;
+            }
+          } else {
+            // Handle case where user is not returned, e.g., show a generic error
+             router.replace('/Feedbacks/AccNotReg');
+          }
         } catch (error: any) {
           // Check if the error is "not registered"
           if (error.message?.includes('not a registered member') || 
@@ -144,6 +177,9 @@ const SignupScreen = (): React.JSX.Element => {
             {googleError || authError}
           </Text>
         )}
+
+        {/* Developer Info Box */}
+
 
         {/* Sign In Button */}
         <TouchableOpacity 
@@ -265,6 +301,20 @@ const styles = StyleSheet.create<Style>({
     textAlign: 'center',
     marginBottom: 15,
     paddingHorizontal: 20,
+  },
+  
+  devInfoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 20,
+    width: '90%',
+  },
+
+  devInfoText: {
+    color: COLORS.white,
+    fontSize: 14,
+    textAlign: 'center',
   },
 
   loadingContainer: {

@@ -31,7 +31,7 @@ const USER_DATA_KEY = 'userData';
  */
 export const googleLogin = async (idToken: string): Promise<AuthResponse> => {
   try {
-    const response = await api.post<AuthResponse>('/google-login', {
+    const response = await api.post<AuthResponse>('/auth/google-login', {
       idToken,
     });
 
@@ -105,7 +105,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
  */
 export const verifyAuthToken = async (): Promise<boolean> => {
   try {
-    const response = await api.get('/api/auth/verify');
+    const response = await api.get('/auth/verify');
     return response.data.success === true;
   } catch (error) {
     return false;
@@ -118,7 +118,7 @@ export const verifyAuthToken = async (): Promise<boolean> => {
  */
 export const getUserProfile = async (): Promise<User | null> => {
   try {
-    const response = await api.get<{ success: boolean; user: User }>('/api/auth/me');
+    const response = await api.get<{ success: boolean; user: User }>('/auth/me');
     return response.data.user;
   } catch (error) {
     console.error('Error fetching user profile:', error);
