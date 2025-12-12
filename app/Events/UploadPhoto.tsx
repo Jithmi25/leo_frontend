@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Constants from "expo-constants";
-
 import {
   View,
   Text,
@@ -15,7 +13,6 @@ import {
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { createClient } from '@supabase/supabase-js';
 
 const COLORS = {
   white: '#FFFFFF',
@@ -25,11 +22,6 @@ const COLORS = {
   greyText: '#A0A0A0',
 };
 
-const { EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY } =
-  Constants.expoConfig?.extra ?? {};
-const supabase = createClient(EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY);
-
-
 export default function UploadPhoto() {
   const router = useRouter();
   const [userName, setUserName] = useState('');
@@ -37,6 +29,7 @@ export default function UploadPhoto() {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async () => {
+    // 1. Basic Validation
     if (!userName.trim()) {
       Alert.alert('Error', 'Please enter your name');
       return;
@@ -49,30 +42,16 @@ export default function UploadPhoto() {
 
     setIsUploading(true);
 
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-
-      const { error } = await supabase.from('gallery_photos').insert({
-        user_id: userData?.user?.id || null,
-        user_name: userName,
-        user_avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
-        image_url: imageUrl,
-        event_id: 'general',
-      });
-
-      if (error) {
-        Alert.alert('Error', 'Failed to upload photo');
-        console.error(error);
-      } else {
-        Alert.alert('Success', 'Photo uploaded successfully!');
-        router.back();
-      }
-    } catch (err) {
-      Alert.alert('Error', 'An unexpected error occurred');
-      console.error(err);
-    } finally {
+    // 2. Simulate Network Request (Fake Upload)
+    setTimeout(() => {
       setIsUploading(false);
-    }
+      Alert.alert('Success', 'Photo uploaded successfully!', [
+        {
+          text: 'OK',
+          onPress: () => router.back(), // Go back to Gallery
+        },
+      ]);
+    }, 1500); // 1.5 second delay to feel like a real upload
   };
 
   return (
@@ -175,7 +154,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 24,
-    paddingBottom: 100,
+    paddingBottom: 200,
   },
 
   uploadPreview: {

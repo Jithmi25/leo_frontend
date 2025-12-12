@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,6 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, Upload } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import PhotoCard from '@/components/Events/PhotoCard';
-import Constants from "expo-constants";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const { width } = Dimensions.get('window');
 const imageSize = (width - 48) / 2;
@@ -40,15 +34,7 @@ interface GalleryPhoto {
   created_at: string;
 }
 
-export default function Gallery() {
-  const router = useRouter();
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
-  const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
-
-//   useEffect(() => {
-//     fetchPhotos();
-//   }, []);
-
+// Moved sample data outside component to avoid re-creation on render
 const samplePhotos: GalleryPhoto[] = [
   {
     id: "1",
@@ -88,23 +74,11 @@ const samplePhotos: GalleryPhoto[] = [
   },
 ];
 
-
-useEffect(() => {
-  setPhotos(samplePhotos);
-}, []);
-
-
-
-  const fetchPhotos = async () => {
-    const { data, error } = await supabase
-      .from('gallery_photos')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (data && !error) {
-      setPhotos(data);
-    }
-  };
+export default function Gallery() {
+  const router = useRouter();
+  // Initialize state directly with samplePhotos
+  const [photos, setPhotos] = useState<GalleryPhoto[]>(samplePhotos);
+  const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
 
   const renderPhotoItem = ({ item }: { item: GalleryPhoto }) => (
     <TouchableOpacity
@@ -137,14 +111,15 @@ useEffect(() => {
         </View>
 
         <View style={styles.uploadSection}>
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={() => router.push('/Events/UploadPhoto')}
-          >
-            <Upload color={COLORS.white} size={20} />
-            <Text style={styles.uploadButtonText}>Upload Photo</Text>
-          </TouchableOpacity>
-        </View>
+  <TouchableOpacity
+    style={styles.uploadButton}
+    // Use push to allow going back. Ensure casing matches your file name exactly.
+    onPress={() => router.push('/Events/UploadPhoto')} 
+  >
+    <Upload color={COLORS.white} size={20} />
+    <Text style={styles.uploadButtonText}>Upload Photos</Text>
+  </TouchableOpacity>
+</View>
 
         <View style={styles.whiteCard}>
           <Text style={styles.sectionTitle}>Recently Added</Text>
@@ -175,8 +150,8 @@ useEffect(() => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1,paddingTop: StatusBar.currentHeight || 0 },
-  
+  container: { flex: 1, paddingTop: StatusBar.currentHeight || 0 },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -191,7 +166,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   uploadSection: {
-    
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -217,7 +191,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 16,
     paddingVertical: 20,
-    paddingBottom: 100,
+    paddingBottom: 200,
   },
   sectionTitle: {
     fontSize: 18,
