@@ -9,9 +9,12 @@ import {
     SafeAreaView,
     ScrollView,
     Image,
+    Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+
+const { height } = Dimensions.get('window');
 
 const COLORS = {
     black: '#000000',
@@ -116,6 +119,22 @@ const CLUBS_LIST: Club[] = [
         engagementChange: -0.66,
         logoUri: 'https://placehold.co/60x60/00BCD4/FFF?text=DE',
     },
+    {
+        rank: 4,
+        name: 'Leo Club of Moratuwa',
+        postChange: 2,
+        postCount: 12,
+        engagementChange: 1.5,
+        logoUri: 'https://placehold.co/60x60/2196F3/FFF?text=LM',
+    },
+    {
+        rank: 5,
+        name: 'Leo Club of Piliyandala',
+        postChange: 0,
+        postCount: 3,
+        engagementChange: 0,
+        logoUri: 'https://placehold.co/60x60/4CAF50/FFF?text=LP',
+    },
 ];
 
 export default function WMLeaderboardScreen() {
@@ -193,15 +212,20 @@ export default function WMLeaderboardScreen() {
     );
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={[COLORS.black, COLORS.brownDark, COLORS.goldDark]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.container}
+        >
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-            <LinearGradient
-                colors={[COLORS.black, COLORS.brownDark, COLORS.goldDark]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.topSection}
+            <ScrollView
+                style={styles.scrollView}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
             >
+                {/* --- TOP SECTION (Scrolls away) --- */}
                 <SafeAreaView>
                     {/* Header */}
                     <View style={styles.header}>
@@ -209,6 +233,8 @@ export default function WMLeaderboardScreen() {
                             <Ionicons name="arrow-back" size={24} color={COLORS.goldMid} />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Leader Board</Text>
+                        {/* Placeholder for symmetry or extra icon */}
+                        <View style={{ width: 24 }} />
                     </View>
 
                     {/* Top 3 Podium */}
@@ -247,54 +273,55 @@ export default function WMLeaderboardScreen() {
                         </View>
                     </View>
 
-                    {/* Districts List */}
+                    {/* Districts List (Top Section) */}
                     <View style={styles.districtsList}>
                         {DISTRICTS_LIST.map(renderDistrictRow)}
                     </View>
                 </SafeAreaView>
-            </LinearGradient>
 
-            {/* Clubs Section */}
-            <ScrollView
-                style={styles.clubsSection}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.clubsContent}
-            >
-                {CLUBS_LIST.map(renderClubCard)}
+                {/* --- BOTTOM SECTION (White Card) --- */}
+                {/* This card is inside the ScrollView, so it pushes up as you scroll */}
+                <View style={styles.whiteCard}>
+                    <Text style={styles.sectionTitle}>All Clubs</Text>
+                    
+                    {CLUBS_LIST.map(renderClubCard)}
 
-                {/* Load More Indicator */}
-                <TouchableOpacity style={styles.loadMoreButton}>
-                    <Ionicons name="chevron-down" size={24} color={COLORS.darkText} />
-                </TouchableOpacity>
-
-                <View style={{ height: 40 }} />
+                    {/* Load More Indicator */}
+                    <TouchableOpacity style={styles.loadMoreButton}>
+                        <Ionicons name="chevron-down" size={24} color={COLORS.darkText} />
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
-        </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
-        paddingTop: StatusBar.currentHeight || 0
     },
-    topSection: {
-        paddingBottom: 20,
+    scrollView: {
+        flex: 1,
+        paddingTop: StatusBar.currentHeight || 0,
     },
+    scrollContent: {
+        flexGrow: 1,
+    },
+    // HEADER
     header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 20,
-        gap: 12,
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
         color: COLORS.white,
     },
+    // PODIUM
     podiumContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -346,14 +373,16 @@ const styles = StyleSheet.create({
         height: 90,
         borderRadius: 45,
     },
+    // DISTRICT LIST (In Top Section)
     districtsList: {
         paddingHorizontal: 16,
         gap: 12,
+        marginBottom: 30, // Space before the white card starts
     },
     districtRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.lightGrey,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent or stick to lightGrey
         borderRadius: 12,
         paddingVertical: 12,
         paddingHorizontal: 12,
@@ -400,16 +429,22 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 25,
     },
-    clubsSection: {
-        flex: 1,
+    // WHITE CARD SECTION
+    whiteCard: {
         backgroundColor: COLORS.white,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        marginTop: -20,
-    },
-    clubsContent: {
         paddingHorizontal: 16,
-        paddingTop: 24,
+        paddingVertical: 24,
+        minHeight: height * 0.6, // Ensures it takes up meaningful space even if empty
+        paddingBottom: 100, // Extra padding at bottom for scrolling feel
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: COLORS.darkText,
+        marginBottom: 16,
+        marginLeft: 4,
     },
     clubCard: {
         backgroundColor: COLORS.lightGrey,
@@ -488,5 +523,6 @@ const styles = StyleSheet.create({
     loadMoreButton: {
         alignSelf: 'center',
         padding: 12,
+        marginTop: 8,
     },
 });
