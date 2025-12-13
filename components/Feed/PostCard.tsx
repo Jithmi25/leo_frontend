@@ -1,7 +1,7 @@
-import ShareModal from '@/components/Feed/ShareModel'; // Import the separate ShareModal component
+import ShareModal from '@/components/Feed/ShareModel';
+import { router } from 'expo-router';
 import { Bookmark, Heart, MessageCircle, Share2 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { router } from 'expo-router';
 import {
   Image,
   ImageStyle,
@@ -33,9 +33,11 @@ interface PostCardProps {
   initialLikes: number;
   initialComments: number;
   initialShares: number;
+  initialIsLiked: boolean; // Add this prop
   onCommentPress?: () => void;
-  onSharePress?: () => void;
+  onSharePress?: (shareOption: string) => void;
   onBookmarkPress?: (postId: string) => void;
+  onLikePress?: (isLiking: boolean) => Promise<void>; // Changed to return Promise
 }
 
 interface Style {
@@ -68,39 +70,68 @@ const PostCard: React.FC<PostCardProps> = ({
   initialLikes,
   initialComments,
   initialShares,
+  initialIsLiked,
   onCommentPress,
   onSharePress,
   onBookmarkPress,
+  onLikePress,
 }) => {
   const [likes, setLikes] = useState(initialLikes);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [shares, setShares] = useState(initialShares);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   const defaultAvatar = 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1';
   const defaultMedia = 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800';
 
-  const handleLike = () => {
-    setLikes((prev) => (isLiked ? prev - 1 : prev + 1));
-    setIsLiked((prev) => !prev);
-    console.log(
-      `Post ${postId} liked status changed to ${!isLiked}. New count: ${
-        isLiked ? likes - 1 : likes + 1
-      }`
-    );
+  const handleLike = async () => {
+    if (isLikeLoading) return;
+    
+    const newLikedState = !isLiked;
+    const newLikeCount = newLikedState ? likes + 1 : likes - 1;
+    
+    // Optimistic update
+    setLikes(newLikeCount);
+    setIsLiked(newLikedState);
+    setIsLikeLoading(true);
+    
+    // Call backend like API
+    if (onLikePress) {
+      try {
+        await onLikePress(newLikedState);
+      } catch (error) {
+        // Rollback if API call fails
+        setLikes(likes);
+        setIsLiked(isLiked);
+        console.error('Failed to like post:', error);
+      } finally {
+        setIsLikeLoading(false);
+      }
+    } else {
+      setIsLikeLoading(false);
+    }
   };
 
   const handleShare = () => {
     setIsModalVisible(true);
-    onSharePress && onSharePress();
   };
 
   const handleShareOption = (option: string) => {
-    // Optional: Add any additional logic here if needed after sharing
-    console.log(`Shared to ${option}`);
+    console.log(`Shared to ${option} for post ${postId}`);
+    setShares(prev => prev + 1);
+    
+    // Call the parent share handler
+    if (onSharePress) {
+      onSharePress(option);
+    }
   };
 
   const formatCount = (count: number): string => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    }
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1)}K`;
     }
@@ -111,13 +142,12 @@ const PostCard: React.FC<PostCardProps> = ({
     <View style={styles.cardContainer}>
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <TouchableOpacity activeOpacity={0.8}onPress={() => router.push('/Profile/profile')} >
-          <Image
-            source={{ uri: userAvatarUri || defaultAvatar }}
-            style={styles.avatar}
-            resizeMode="cover"
-
-          />
+          <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/Profile/profile')}>
+            <Image
+              source={{ uri: userAvatarUri || defaultAvatar }}
+              style={styles.avatar}
+              resizeMode="cover"
+            />
           </TouchableOpacity>
           <View style={styles.names}>
             <Text style={styles.userNameText} numberOfLines={1}>
@@ -163,6 +193,7 @@ const PostCard: React.FC<PostCardProps> = ({
           style={styles.actionButton}
           onPress={handleLike}
           activeOpacity={0.7}
+          disabled={isLikeLoading}
         >
           <View style={styles.actionRow}>
             <Heart
@@ -201,12 +232,11 @@ const PostCard: React.FC<PostCardProps> = ({
         >
           <View style={styles.actionRow}>
             <Share2 color={COLORS.greyText} size={20} />
-            <Text style={styles.actionCount}>{formatCount(initialShares)}</Text>
+            <Text style={styles.actionCount}>{formatCount(shares)}</Text>
           </View>
         </TouchableOpacity>
       </View>
 
-      {/* Share Modal Component */}
       <ShareModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -229,7 +259,6 @@ const styles = StyleSheet.create<Style>({
     shadowOpacity: 0.08,
     shadowRadius: 8,
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -269,7 +298,6 @@ const styles = StyleSheet.create<Style>({
     padding: 4,
     marginTop: 4,
   },
-
   postTitleText: {
     fontSize: 16,
     fontWeight: '700',
@@ -283,7 +311,6 @@ const styles = StyleSheet.create<Style>({
     lineHeight: 20,
     marginBottom: 12,
   },
-
   mediaContainer: {
     borderRadius: 12,
     overflow: 'hidden',
@@ -294,7 +321,6 @@ const styles = StyleSheet.create<Style>({
     aspectRatio: 1.2,
     minHeight: 200,
   },
-
   footer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',

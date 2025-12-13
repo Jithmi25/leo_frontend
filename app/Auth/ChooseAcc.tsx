@@ -1,5 +1,6 @@
 import React from 'react';
-import { router } from 'expo-router';
+// 💡 FIX 1: Import Stack to control the header visibility
+import { router, Stack } from 'expo-router';
 
 import { 
   View, 
@@ -17,24 +18,24 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Asset Imports
-const appLogo = require('../../assets/images/logo.png'); // App logo at the top of the card
+const appLogo = require('../../assets/images/logo.png'); 
 
 // --- Color Constants ---
 const COLORS = {
   black: '#000000',
   white: '#FFFFFF',
   goldMid: '#FFC72C', 
-  greyText: '#555555', // For secondary text in the account list
-  lightGreyBackground: '#F0F0F0', // For the card background
+  greyText: '#555555', 
+  lightGreyBackground: '#F0F0F0', 
 };
 
 // --- Type Definitions ---
 interface Account {
   id: string;
-  name?: string; // Optional name as per image structure where email might be on its own line
+  name?: string; 
   email: string;
-  avatarUri?: string; // Optional URI for the avatar image
-  initials?: string; // Fallback for avatar if no URI
+  avatarUri?: string; 
+  initials?: string; 
 }
 
 interface Style {
@@ -52,7 +53,7 @@ interface Style {
   accountInfo: ViewStyle;
   accountName: TextStyle;
   accountEmail: TextStyle;
-  divider: ViewStyle; // Added style for the horizontal line
+  divider: ViewStyle; 
   addAccountItem: ViewStyle;
   addAccountIcon: TextStyle;
   addAccountText: TextStyle;
@@ -62,7 +63,6 @@ interface Style {
 
 const ChooseAccountScreen = (): React.JSX.Element => {
 
-  // Hardcoded account data (simulating data from a backend)
   const accounts: Account[] = [
     {
       id: '1',
@@ -80,10 +80,9 @@ const ChooseAccountScreen = (): React.JSX.Element => {
 
   const handleGoBack = (): void => {
     console.log('Back button pressed');
-  };
-
-  const handleAccountSelect = (account: Account): void => {
-    console.log(`Account selected: ${account.email}`);
+    if (router.canGoBack()) {
+      router.back();
+    }
   };
 
   const handleAddAnotherAccount = (): void => {
@@ -91,19 +90,13 @@ const ChooseAccountScreen = (): React.JSX.Element => {
   };
 
   const renderAccountAvatar = (account: Account): React.JSX.Element => {
-    // Note: The image shows different icons for each account. I will use 
-    // MaterialCommunityIcons for the two hardcoded accounts for better fidelity 
-    // to the image (initials for Amala, person icon for Sithumi).
-    
     if (account.id === '1') {
-      // Custom avatar for Amala (initials)
       return (
         <View style={[styles.accountAvatarContainer, { backgroundColor: COLORS.goldMid }]}>
           <Text style={styles.accountAvatarText}>{account.initials}</Text>
         </View>
       );
     } else if (account.id === '2') {
-       // Custom avatar for Sithumi (female person icon with specific colors)
        return (
         <View style={[styles.accountAvatarContainer, { backgroundColor: '#F95D6A' }]}>
             <MaterialCommunityIcons name="face-woman" size={24} color={COLORS.white} />
@@ -111,7 +104,6 @@ const ChooseAccountScreen = (): React.JSX.Element => {
       );
     }
     
-    // Default fallback (e.g., if more accounts were added)
     return (
       <View style={styles.accountAvatarContainer}>
         <Text style={styles.accountAvatarText}>{account.initials || '?'}</Text>
@@ -125,16 +117,22 @@ const ChooseAccountScreen = (): React.JSX.Element => {
       locations={[0.0, 0.5, 1.0]} 
       style={styles.container}
     >
+      {/* 💡 FIX 2: Explicitly hide the header for this screen */}
+      <Stack.Screen options={{ headerShown: false }} />
+
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
-      {/* Top Header Section with Back Button and "Choose Account" Title */}
+      {/* Top Header Section */}
       <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
           <Ionicons name="arrow-back" size={30} color={COLORS.white} />
         </TouchableOpacity>
-        {/* Title is slightly offset from the left to center the card content */}
+        
         <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/Webmaster/WMAdmin')}>
         <Text style={styles.headerTitle}>Choose Account</Text>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/SuperAdmin/Home')}>
+        <Text style={styles.headerTitle}>Choose Accounts</Text>
         </TouchableOpacity>
       </View>
 
@@ -147,27 +145,24 @@ const ChooseAccountScreen = (): React.JSX.Element => {
         {/* List of Accounts with Divider */}
         {accounts.map((account, index) => (
           <React.Fragment key={account.id}>
-            {/* Conditional Divider: Render a line before all items except the first (index > 0) */}
             {index > 0 && <View style={styles.divider} />}
             
             <TouchableOpacity 
-  style={styles.accountItem} 
-  onPress={() => router.replace('/Feedbacks/SuccsessSignup')}
->
-  {renderAccountAvatar(account)}
+              style={styles.accountItem} 
+              onPress={() => router.replace('/Feedbacks/SuccsessSignup')}
+            >
+              {renderAccountAvatar(account)}
 
-  <View style={styles.accountInfo}>
-    {account.name && (
-      <Text style={styles.accountName}>{account.name}</Text>
-    )}
-    <Text style={styles.accountEmail}>{account.email}</Text>
-  </View>
-</TouchableOpacity>
-
+              <View style={styles.accountInfo}>
+                {account.name && (
+                  <Text style={styles.accountName}>{account.name}</Text>
+                )}
+                <Text style={styles.accountEmail}>{account.email}</Text>
+              </View>
+            </TouchableOpacity>
           </React.Fragment>
         ))}
 
-        {/* Divider before Add Another Account, matching the image */}
         <View style={styles.divider} />
 
         {/* Add Another Account Option */}
@@ -175,7 +170,6 @@ const ChooseAccountScreen = (): React.JSX.Element => {
           style={styles.addAccountItem} 
           onPress={handleAddAnotherAccount}
         >
-          {/* Using a generic user-plus icon */}
           <View style={[styles.accountAvatarContainer, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.greyText }]}>
              <MaterialCommunityIcons name="account-plus" size={24} color={COLORS.greyText} />
           </View>
@@ -195,6 +189,7 @@ const ChooseAccountScreen = (): React.JSX.Element => {
 const styles = StyleSheet.create<Style>({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight || 0
   },
   headerContainer: {
     flexDirection: 'row',
@@ -244,20 +239,16 @@ const styles = StyleSheet.create<Style>({
     alignItems: 'center',
     width: '100%',
     paddingVertical: 12,
-    // Note: Removed marginBottom to keep space tight around the divider
   },
-  // NEW DIVIDER STYLE
   divider: {
     height: 1,
     width: '100%',
     backgroundColor: '#EEEEEE',
-    // Reduced vertical margin to make the line separation subtle, matching the image
   },
   accountAvatarContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    // Background color is handled in renderAccountAvatar for customization
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
@@ -279,7 +270,7 @@ const styles = StyleSheet.create<Style>({
   },
   accountName: {
     fontSize: 16,
-    fontWeight: 'bold', // Bolded name to match the image
+    fontWeight: 'bold', 
     color: COLORS.black,
   },
   accountEmail: {
@@ -291,18 +282,15 @@ const styles = StyleSheet.create<Style>({
     alignItems: 'center',
     width: '100%',
     paddingVertical: 12,
-    // Removed marginTop, relying on the divider
   },
   addAccountIcon: {
-    // This style is now largely unused since I updated renderAccountAvatar and addAccountItem to use a View for better avatar styling.
-    // It is kept for interface completeness.
     marginRight: 15,
     width: 40, 
     textAlign: 'center',
   },
   addAccountText: {
     fontSize: 16,
-    color: COLORS.black, // Changed to black for better contrast/matching
+    color: COLORS.black, 
     fontWeight: '500',
   },
   footerText: {

@@ -213,7 +213,7 @@ export default function PostPreviewScreen() {
 
 // ... previewStyles (Stylesheets) remain the same
 const previewStyles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.lightGrey },
+    container: { flex: 1, backgroundColor: COLORS.lightGrey , paddingTop: StatusBar.currentHeight || 0 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: COLORS.white, borderBottomWidth: 1, borderBottomColor: COLORS.borderGrey },
     headerTitle: { fontSize: 18, fontWeight: '700', color: COLORS.darkText },
     editButton: { fontSize: 15, fontWeight: '600', color: COLORS.goldMid },

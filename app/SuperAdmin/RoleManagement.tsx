@@ -479,6 +479,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.lightGrey,
+        paddingTop: StatusBar.currentHeight || 0
     },
     header: {
         flexDirection: 'row',

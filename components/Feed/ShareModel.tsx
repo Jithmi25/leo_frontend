@@ -1,13 +1,13 @@
+import { Share2 } from 'lucide-react-native';
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
   Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { Share2 } from 'lucide-react-native';
 
 const COLORS = {
   black: '#000000',
@@ -25,9 +25,9 @@ interface ShareModalProps {
 
 const ShareModal: React.FC<ShareModalProps> = ({ visible, onClose, onShareOption }) => {
   const handleShareOption = (option: string) => {
-    onClose(); // Close modal
-    Alert.alert('Shared Successfully', `Post shared to ${option}!`); // Show success message
-    onShareOption(option); // Call the parent's handler if needed
+    onClose();
+    Alert.alert('Shared Successfully', `Post shared to ${option}!`);
+    onShareOption(option);
   };
 
   return (
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '80%',
     alignItems: 'center',
-    borderWidth: 2, // Stroke (border)
+    borderWidth: 2,
     borderColor: COLORS.goldAccent,
   },
   modalTitle: {

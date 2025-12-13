@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
     View,
@@ -9,188 +9,296 @@ import {
     SafeAreaView,
     ScrollView,
     Image,
+    ActivityIndicator,
+    RefreshControl,
+    FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { usersApi } from '@/services/api';
 
 const COLORS = {
-    black: '#000000',
-    white: '#FFFFFF',
-    goldMid: '#FFC72C',
-    goldDark: '#B8860B',
-    brownDark: '#3D3A2E',
+    black: '#1a1a1a',
     darkText: '#000000',
+    brownDark: '#2d1b0c',
+    goldDark: '#8b6f1d',
+    goldMid: '#FFC72C',
+    white: '#FFFFFF',
     greyText: '#666666',
-    lightGrey: '#E8E8E8',
-    greenTrend: '#4CAF50',
-    redTrend: '#F44336',
+    lightGrey: '#F5F5F5',
+    borderGrey: '#E0E0E0',
 };
 
 interface District {
-    rank: number;
+    id: string;
     name: string;
+    postCount: number;
+    engagementRate: number;
     leadingClubs: number;
     trend: string;
-    logoUri: string;
+    memberCount: number;
 }
 
 interface Club {
-    rank: number;
+    id: string;
     name: string;
-    postChange: number;
+    district: string;
+    memberCount: number;
     postCount: number;
+    postChange: number;
+    engagementScore: number;
     engagementChange: number;
-    logoUri: string;
 }
-
-const TOP_DISTRICTS: District[] = [
-    {
-        rank: 1,
-        name: 'Leo District 306 D03',
-        leadingClubs: 3,
-        trend: '3+',
-        logoUri: 'https://placehold.co/80x80/00BCD4/FFF?text=D03',
-    },
-    {
-        rank: 2,
-        name: 'Leo District 306 D01',
-        leadingClubs: 2,
-        trend: '',
-        logoUri: 'https://placehold.co/80x80/E91E63/FFF?text=D01',
-    },
-    {
-        rank: 3,
-        name: 'Leo District 306 D04',
-        leadingClubs: 2,
-        trend: '1+',
-        logoUri: 'https://placehold.co/80x80/2196F3/FFF?text=D04',
-    },
-];
 
 const DISTRICTS_LIST: District[] = [
     {
-        rank: 1,
-        name: 'Leo District 306 D03',
-        leadingClubs: 3,
-        trend: '3+',
-        logoUri: 'https://placehold.co/60x60/00BCD4/FFF?text=D03',
+        id: '306D01',
+        name: '306 D01 - Colombo East',
+        postCount: 2450,
+        engagementRate: 78.5,
+        leadingClubs: 8,
+        trend: '12+',
+        memberCount: 450,
     },
     {
-        rank: 2,
-        name: 'Leo District 306 D01',
-        leadingClubs: 2,
-        trend: '',
-        logoUri: 'https://placehold.co/60x60/8B0000/FFF?text=D01',
+        id: '306D02',
+        name: '306 D02 - Colombo West',
+        postCount: 2180,
+        engagementRate: 75.2,
+        leadingClubs: 7,
+        trend: '8+',
+        memberCount: 380,
     },
     {
-        rank: 3,
-        name: 'Leo District 306 D04',
-        leadingClubs: 2,
-        trend: '1+',
-        logoUri: 'https://placehold.co/60x60/2196F3/FFF?text=D04',
+        id: '306D03',
+        name: '306 D03 - Kandy',
+        postCount: 1950,
+        engagementRate: 72.1,
+        leadingClubs: 6,
+        trend: '5+',
+        memberCount: 320,
     },
 ];
 
 const CLUBS_LIST: Club[] = [
     {
-        rank: 1,
-        name: 'Leo Club of Colombo Evergreen',
-        postChange: 1,
-        postCount: 8,
-        engagementChange: 4,
-        logoUri: 'https://placehold.co/60x60/00BCD4/FFF?text=CE',
+        id: 'club-1',
+        name: 'Colombo Evergreen Leo Club',
+        district: '306D01',
+        memberCount: 65,
+        postCount: 340,
+        postChange: 12,
+        engagementScore: 89.5,
+        engagementChange: 5.2,
     },
     {
-        rank: 2,
-        name: 'Leo Club of Ananda College',
-        postChange: -1,
-        postCount: 5,
-        engagementChange: -0.76,
-        logoUri: 'https://placehold.co/60x60/8B0000/FFF?text=AC',
+        id: 'club-2',
+        name: 'Ananda College Leo Club',
+        district: '306D01',
+        memberCount: 52,
+        postCount: 298,
+        postChange: 8,
+        engagementScore: 85.3,
+        engagementChange: 3.1,
     },
     {
-        rank: 3,
-        name: 'Leo Club of Dehiwala East',
-        postChange: -1,
-        postCount: 4,
-        engagementChange: -0.66,
-        logoUri: 'https://placehold.co/60x60/00BCD4/FFF?text=DE',
+        id: 'club-3',
+        name: 'Dehiwala East Leo Club',
+        district: '306D02',
+        memberCount: 48,
+        postCount: 265,
+        postChange: 5,
+        engagementScore: 82.1,
+        engagementChange: 1.5,
+    },
+    {
+        id: 'club-4',
+        name: 'Kandy Central Leo Club',
+        district: '306D03',
+        memberCount: 42,
+        postCount: 238,
+        postChange: 3,
+        engagementScore: 78.9,
+        engagementChange: 0.8,
     },
 ];
 
 export default function WMLeaderboardScreen() {
-    const renderDistrictRow = (district: District) => (
-        <View style={styles.districtRow} key={district.rank}>
-            <View style={styles.rankBadge}>
-                <Text style={styles.rankText}>{district.rank}</Text>
+    const [districts, setDistricts] = useState<District[]>([]);
+    const [clubs, setClubs] = useState<Club[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('month');
+
+    useEffect(() => {
+        fetchLeaderboard();
+    }, [timeRange]);
+
+    const fetchLeaderboard = async () => {
+        try {
+            setLoading(true);
+            
+            // Uncomment when backend is ready
+            // const leaderboardData = await usersApi.getLeaderboard({
+            //     timeframe: timeRange,
+            //     limit: 20
+            // });
+            // setDistricts(leaderboardData.districts);
+            // setClubs(leaderboardData.clubs);
+            
+            // For now, use mock data with time range variations
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            let mockDistricts: District[];
+            let mockClubs: Club[];
+            
+            switch (timeRange) {
+                case 'week':
+                    mockDistricts = DISTRICTS_LIST.map(d => ({
+                        ...d,
+                        postCount: Math.floor(d.postCount * 0.2),
+                        leadingClubs: Math.max(1, d.leadingClubs - 2),
+                        trend: `${Math.floor(Math.random() * 5) + 1}+`,
+                    }));
+                    mockClubs = CLUBS_LIST.map(c => ({
+                        ...c,
+                        postCount: Math.floor(c.postCount * 0.15),
+                        postChange: Math.floor(Math.random() * 8) - 2,
+                        engagementChange: (Math.random() * 10) - 5,
+                    }));
+                    break;
+                case 'month':
+                    mockDistricts = DISTRICTS_LIST;
+                    mockClubs = CLUBS_LIST;
+                    break;
+                case 'all':
+                    mockDistricts = DISTRICTS_LIST.map(d => ({
+                        ...d,
+                        postCount: d.postCount * 12,
+                        leadingClubs: d.leadingClubs + 3,
+                        trend: '',
+                    }));
+                    mockClubs = CLUBS_LIST.map(c => ({
+                        ...c,
+                        postCount: c.postCount * 12,
+                        postChange: 0,
+                        engagementChange: 8.5,
+                    }));
+                    break;
+                default:
+                    mockDistricts = DISTRICTS_LIST;
+                    mockClubs = CLUBS_LIST;
+            }
+            
+            setDistricts(mockDistricts);
+            setClubs(mockClubs);
+            
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    const handleRefresh = () => {
+        setRefreshing(true);
+        fetchLeaderboard();
+    };
+
+    const handleTimeRangeChange = (range: 'week' | 'month' | 'all') => {
+        setTimeRange(range);
+    };
+
+    const renderDistrictCard = (district: District, index: number) => (
+        <View key={district.id} style={styles.districtCard}>
+            <View style={styles.districtRank}>
+                <Text style={styles.rankNumber}>{index + 1}</Text>
             </View>
             <View style={styles.districtInfo}>
                 <Text style={styles.districtName}>{district.name}</Text>
-                <Text style={styles.districtSubtext}>
-                    With {district.leadingClubs} leading clubs
-                </Text>
-            </View>
-            {district.trend && (
-                <View style={styles.trendBadge}>
-                    <Text style={styles.trendText}>{district.trend}</Text>
-                    <Ionicons name="arrow-up" size={16} color={COLORS.greenTrend} />
+                <View style={styles.districtStats}>
+                    <View style={styles.statBadge}>
+                        <Text style={styles.statLabel}>Posts:</Text>
+                        <Text style={styles.statValue}>{district.postCount}</Text>
+                    </View>
+                    <View style={styles.statBadge}>
+                        <Text style={styles.statLabel}>Engagement:</Text>
+                        <Text style={styles.statValue}>{district.engagementRate}%</Text>
+                    </View>
+                    {district.trend && (
+                        <View style={[styles.statBadge, styles.trendBadge]}>
+                            <Ionicons name="trending-up" size={14} color={COLORS.goldMid} />
+                            <Text style={styles.trendText}>{district.trend}</Text>
+                        </View>
+                    )}
                 </View>
-            )}
-            <Image source={{ uri: district.logoUri }} style={styles.districtLogo} />
+            </View>
         </View>
     );
 
     const renderClubCard = (club: Club) => (
-        <View style={styles.clubCard} key={club.rank}>
-            <View style={styles.clubRankBadge}>
-                <Text style={styles.clubRankText}>{club.rank}</Text>
+        <TouchableOpacity key={club.id} style={styles.clubCard} activeOpacity={0.7}>
+            <View style={styles.clubRank}>
+                <Text style={styles.clubRankText}>{clubs.indexOf(club) + 1}</Text>
             </View>
             <View style={styles.clubContent}>
-                <View style={styles.clubHeader}>
-                    <Text style={styles.clubName}>{club.name}</Text>
-                    <Image source={{ uri: club.logoUri }} style={styles.clubLogo} />
-                </View>
+                <Text style={styles.clubName}>{club.name}</Text>
+                <Text style={styles.clubSubtitle}>{club.district}</Text>
                 <View style={styles.clubStats}>
-                    <View style={styles.statItem}>
-                        <Text
-                            style={[
-                                styles.statChange,
-                                { color: club.postChange > 0 ? COLORS.greenTrend : COLORS.redTrend },
-                            ]}
-                        >
-                            {club.postChange > 0 ? `${club.postChange}+` : `${Math.abs(club.postChange)}-`}
-                        </Text>
-                        <Ionicons
-                            name={club.postChange > 0 ? 'arrow-up' : 'arrow-down'}
-                            size={14}
-                            color={club.postChange > 0 ? COLORS.greenTrend : COLORS.redTrend}
-                        />
+                    <View style={styles.clubStatItem}>
+                        <Ionicons name="people" size={14} color={COLORS.goldMid} />
+                        <Text style={styles.clubStatText}>{club.memberCount} members</Text>
                     </View>
-                    <View style={styles.statItem}>
-                        <Text
-                            style={[
-                                styles.engagementChange,
-                                { color: club.engagementChange > 0 ? COLORS.greenTrend : COLORS.redTrend },
-                            ]}
-                        >
-                            {club.engagementChange > 0
-                                ? `${club.engagementChange}%`
-                                : `${Math.abs(club.engagementChange)}%`}
-                        </Text>
-                        <Ionicons
-                            name={club.engagementChange > 0 ? 'arrow-up' : 'arrow-down'}
-                            size={14}
-                            color={club.engagementChange > 0 ? COLORS.greenTrend : COLORS.redTrend}
-                        />
+                    <View style={styles.clubStatItem}>
+                        <Ionicons name="chatbubbles" size={14} color={COLORS.goldMid} />
+                        <Text style={styles.clubStatText}>{club.postCount} posts</Text>
+                    </View>
+                    <View style={styles.clubStatItem}>
+                        <Ionicons name="flame" size={14} color={COLORS.goldMid} />
+                        <Text style={styles.clubStatText}>{club.engagementScore}%</Text>
                     </View>
                 </View>
-                <View style={styles.clubDetails}>
-                    <Text style={styles.postCount}>With {club.postCount} posts</Text>
-                    <Text style={styles.engagementLabel}>Member Engagement</Text>
-                </View>
+                {club.postChange !== 0 && (
+                    <View style={[styles.changeIndicator, club.postChange > 0 && styles.positiveChange]}>
+                        <Ionicons 
+                            name={club.postChange > 0 ? "arrow-up" : "arrow-down"} 
+                            size={12} 
+                            color={club.postChange > 0 ? '#4CAF50' : COLORS.red} 
+                        />
+                        <Text style={[
+                            styles.changeText,
+                            club.postChange > 0 && styles.positiveChangeText
+                        ]}>
+                            {Math.abs(club.postChange)} posts
+                        </Text>
+                    </View>
+                )}
             </View>
-        </View>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.greyText} />
+        </TouchableOpacity>
     );
+
+    if (loading && districts.length === 0) {
+        return (
+            <View style={styles.container}>
+                <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+                <LinearGradient
+                    colors={[COLORS.black, COLORS.brownDark, COLORS.goldDark]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.fullScreen}
+                >
+                    <SafeAreaView style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.goldMid} />
+                        <Text style={styles.loadingText}>Loading leaderboard...</Text>
+                    </SafeAreaView>
+                </LinearGradient>
+            </View>
+        );
+    }
+
+    const timeLabel = timeRange === 'week' ? 'This Week' : timeRange === 'month' ? 'This Month' : 'All Time';
 
     return (
         <View style={styles.container}>
@@ -205,52 +313,45 @@ export default function WMLeaderboardScreen() {
                 <SafeAreaView>
                     {/* Header */}
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.back()}>
+                        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                             <Ionicons name="arrow-back" size={24} color={COLORS.goldMid} />
                         </TouchableOpacity>
-                        <Text style={styles.headerTitle}>Leader Board</Text>
+                        <Text style={styles.headerTitle}>Leaderboard</Text>
+                        <View style={styles.timeRangeContainer}>
+                            {(['week', 'month', 'all'] as const).map(range => (
+                                <TouchableOpacity
+                                    key={range}
+                                    style={[
+                                        styles.timeRangeButton,
+                                        timeRange === range && styles.timeRangeButtonActive
+                                    ]}
+                                    onPress={() => handleTimeRangeChange(range)}
+                                >
+                                    <Text style={[
+                                        styles.timeRangeText,
+                                        timeRange === range && styles.timeRangeTextActive
+                                    ]}>
+                                        {range === 'week' ? 'W' : range === 'month' ? 'M' : 'A'}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
 
-                    {/* Top 3 Podium */}
-                    <View style={styles.podiumContainer}>
-                        {/* Position 2 - Left */}
-                        <View style={[styles.podiumItem, styles.podiumSecond]}>
-                            <View style={styles.positionBadge}>
-                                <Text style={styles.positionText}>2</Text>
-                            </View>
-                            <Image
-                                source={{ uri: TOP_DISTRICTS[1].logoUri }}
-                                style={styles.podiumLogo}
-                            />
-                        </View>
-
-                        {/* Position 1 - Center */}
-                        <View style={[styles.podiumItem, styles.podiumFirst]}>
-                            <View style={[styles.positionBadge, styles.firstBadge]}>
-                                <Text style={styles.positionText}>1</Text>
-                            </View>
-                            <Image
-                                source={{ uri: TOP_DISTRICTS[0].logoUri }}
-                                style={[styles.podiumLogo, styles.firstLogo]}
-                            />
-                        </View>
-
-                        {/* Position 3 - Right */}
-                        <View style={[styles.podiumItem, styles.podiumThird]}>
-                            <View style={styles.positionBadge}>
-                                <Text style={styles.positionText}>3</Text>
-                            </View>
-                            <Image
-                                source={{ uri: TOP_DISTRICTS[2].logoUri }}
-                                style={styles.podiumLogo}
-                            />
-                        </View>
+                    {/* Districts Section Header */}
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Top Districts</Text>
+                        <Text style={styles.sectionSubtitle}>{timeLabel}</Text>
                     </View>
 
                     {/* Districts List */}
-                    <View style={styles.districtsList}>
-                        {DISTRICTS_LIST.map(renderDistrictRow)}
-                    </View>
+                    <ScrollView 
+                        horizontal 
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.districtsScroll}
+                    >
+                        {districts.map((district, idx) => renderDistrictCard(district, idx))}
+                    </ScrollView>
                 </SafeAreaView>
             </LinearGradient>
 
@@ -259,15 +360,23 @@ export default function WMLeaderboardScreen() {
                 style={styles.clubsSection}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.clubsContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
+                        colors={[COLORS.goldMid]}
+                    />
+                }
             >
-                {CLUBS_LIST.map(renderClubCard)}
+                {/* Clubs List Header */}
+                <View style={styles.clubsHeader}>
+                    <Text style={styles.clubsTitle}>Top Performing Clubs</Text>
+                    <Text style={styles.timeRangeLabel}>{timeLabel}</Text>
+                </View>
 
-                {/* Load More Indicator */}
-                <TouchableOpacity style={styles.loadMoreButton}>
-                    <Ionicons name="chevron-down" size={24} color={COLORS.darkText} />
-                </TouchableOpacity>
+                {clubs.map(renderClubCard)}
 
-                <View style={{ height: 40 }} />
+                <View style={{ height: 20 }} />
             </ScrollView>
         </View>
     );
@@ -278,214 +387,236 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.white,
     },
+    fullScreen: {
+        flex: 1,
+    },
     topSection: {
         paddingBottom: 20,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 20,
-        gap: 12,
+        paddingVertical: 12,
     },
     headerTitle: {
+        flex: 1,
         fontSize: 20,
+        fontWeight: '700',
+        color: COLORS.goldMid,
+        textAlign: 'center',
+    },
+    timeRangeContainer: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    timeRangeButton: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    },
+    timeRangeButtonActive: {
+        backgroundColor: COLORS.goldMid,
+    },
+    timeRangeText: {
+        fontSize: 12,
+        color: COLORS.white,
+        fontWeight: '700',
+    },
+    timeRangeTextActive: {
+        color: COLORS.black,
+    },
+    sectionHeader: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    sectionTitle: {
+        fontSize: 16,
         fontWeight: '700',
         color: COLORS.white,
     },
-    podiumContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-        paddingHorizontal: 20,
-        marginBottom: 30,
+    sectionSubtitle: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.7)',
+        marginTop: 2,
     },
-    podiumItem: {
-        alignItems: 'center',
-        marginHorizontal: 12,
-    },
-    podiumFirst: {
-        marginBottom: 20,
-    },
-    podiumSecond: {
-        marginBottom: 0,
-    },
-    podiumThird: {
-        marginBottom: 0,
-    },
-    positionBadge: {
-        backgroundColor: COLORS.goldMid,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    firstBadge: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-    },
-    positionText: {
-        fontSize: 14,
-        fontWeight: '800',
-        color: COLORS.white,
-    },
-    podiumLogo: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        borderWidth: 3,
-        borderColor: COLORS.white,
-    },
-    firstLogo: {
-        width: 90,
-        height: 90,
-        borderRadius: 45,
-    },
-    districtsList: {
-        paddingHorizontal: 16,
-        gap: 12,
-    },
-    districtRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.lightGrey,
-        borderRadius: 12,
-        paddingVertical: 12,
+    districtsScroll: {
         paddingHorizontal: 12,
-        gap: 12,
     },
-    rankBadge: {
+    districtCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 12,
+        padding: 12,
+        marginHorizontal: 4,
+        minWidth: 280,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 199, 44, 0.3)',
+    },
+    districtRank: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         backgroundColor: COLORS.goldMid,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 12,
     },
-    rankText: {
-        fontSize: 14,
-        fontWeight: '800',
-        color: COLORS.white,
+    rankNumber: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: COLORS.black,
     },
     districtInfo: {
         flex: 1,
     },
     districtName: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: COLORS.darkText,
-        marginBottom: 2,
+        fontSize: 13,
+        fontWeight: '600',
+        color: COLORS.white,
+        marginBottom: 8,
     },
-    districtSubtext: {
-        fontSize: 12,
-        color: COLORS.greyText,
+    districtStats: {
+        flexDirection: 'row',
+        gap: 8,
+        flexWrap: 'wrap',
     },
-    trendBadge: {
+    statBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 2,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        gap: 4,
+    },
+    statLabel: {
+        fontSize: 10,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '500',
+    },
+    statValue: {
+        fontSize: 11,
+        color: COLORS.goldMid,
+        fontWeight: '700',
+    },
+    trendBadge: {
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        borderColor: '#4CAF50',
+        borderWidth: 1,
     },
     trendText: {
-        fontSize: 13,
+        fontSize: 10,
+        color: '#4CAF50',
         fontWeight: '700',
-        color: COLORS.greenTrend,
-    },
-    districtLogo: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
     },
     clubsSection: {
         flex: 1,
-        backgroundColor: COLORS.white,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        marginTop: -20,
     },
     clubsContent: {
         paddingHorizontal: 16,
-        paddingTop: 24,
+        paddingVertical: 16,
+    },
+    clubsHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    clubsTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: COLORS.darkText,
+    },
+    timeRangeLabel: {
+        fontSize: 12,
+        color: COLORS.greyText,
+        fontStyle: 'italic',
     },
     clubCard: {
-        backgroundColor: COLORS.lightGrey,
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 16,
         flexDirection: 'row',
-        gap: 12,
+        alignItems: 'center',
+        backgroundColor: COLORS.white,
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: COLORS.borderGrey,
     },
-    clubRankBadge: {
+    clubRank: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         backgroundColor: COLORS.goldMid,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 12,
     },
     clubRankText: {
         fontSize: 14,
-        fontWeight: '800',
-        color: COLORS.white,
+        fontWeight: '700',
+        color: COLORS.black,
     },
     clubContent: {
         flex: 1,
     },
-    clubHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
     clubName: {
-        fontSize: 15,
-        fontWeight: '700',
+        fontSize: 14,
+        fontWeight: '600',
         color: COLORS.darkText,
-        flex: 1,
     },
-    clubLogo: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+    clubSubtitle: {
+        fontSize: 12,
+        color: COLORS.greyText,
+        marginTop: 2,
     },
     clubStats: {
         flexDirection: 'row',
-        gap: 20,
-        marginBottom: 8,
+        gap: 12,
+        marginTop: 8,
     },
-    statItem: {
+    clubStatItem: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
     },
-    statChange: {
-        fontSize: 14,
-        fontWeight: '700',
-    },
-    engagementChange: {
-        fontSize: 14,
-        fontWeight: '700',
-    },
-    clubDetails: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    postCount: {
-        fontSize: 13,
-        fontStyle: 'italic',
-        color: COLORS.darkText,
-    },
-    engagementLabel: {
+    clubStatText: {
         fontSize: 11,
         color: COLORS.greyText,
-        fontStyle: 'italic',
     },
-    loadMoreButton: {
-        alignSelf: 'center',
-        padding: 12,
+    changeIndicator: {
+        marginTop: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        backgroundColor: '#ffebee',
+        alignSelf: 'flex-start',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    positiveChange: {
+        backgroundColor: '#e8f5e9',
+    },
+    changeText: {
+        fontSize: 11,
+        color: COLORS.red,
+        fontWeight: '600',
+    },
+    positiveChangeText: {
+        color: '#4CAF50',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 12,
+        fontSize: 16,
+        color: COLORS.white,
     },
 });

@@ -80,7 +80,7 @@ export default function ProfileScreen() {
 
             {/* Header */}
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => console.log('Back pressed')}>
+                <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={30} color={COLORS.darkText} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Profile</Text>
@@ -178,7 +178,7 @@ const AVATAR_SIZE = 120;
 const BADGE_ITEM_WIDTH = (width - CARD_MARGIN_HORIZONTAL * 2 - 30) / 2;
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.white },
+    container: { flex: 1, backgroundColor: COLORS.white, paddingTop: StatusBar.currentHeight || 0 },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -256,3 +256,4 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
 });
+

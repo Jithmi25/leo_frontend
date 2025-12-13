@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity , StatusBar} from 'react-native';
 
 const Success: React.FC = () => {
   return (
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    paddingTop: StatusBar.currentHeight || 0
   },
   icon: {
     fontSize: 60,

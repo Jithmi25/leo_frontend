@@ -37,9 +37,19 @@ export const googleLogin = async (idToken: string): Promise<AuthResponse> => {
 
     const { token, user } = response.data;
 
+    console.log('[AuthService] Login successful, storing token...');
+    console.log('[AuthService] Token received:', token ? `Yes (length: ${token.length})` : 'No token in response');
+    console.log('[AuthService] User:', user?.name || user?.email);
+
     // Store token and user data
     await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
     await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+
+    console.log('[AuthService] Token and user data stored successfully');
+    
+    // Verify storage immediately
+    const storedToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+    console.log('[AuthService] Verification - Token retrieved from storage:', storedToken ? `Yes (length: ${storedToken.length})` : 'FAILED - No token found!');
 
     return response.data;
   } catch (error: any) {

@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { router, Stack } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   Alert,
@@ -78,26 +78,22 @@ const SignupScreen = (): React.JSX.Element => {
           // Send ID token to backend for verification
           const loggedInUser = await login(googleResult.idToken);
           
-          // Role-based redirection
+                    // Role-based redirection
           if (loggedInUser) {
-            switch (loggedInUser.role) {
-              case 'webmaster':
-                router.replace('/Feed');
-                break;
-              case 'superAdmin':
-                router.replace('/SuperAdmin/Home');
-                break;
-              case 'member':
-                router.replace('/Feeds/SearchProfile');
-                break;
-              default:
-                // Fallback to a default success screen if role is not recognized
-                router.replace('/Feedbacks/SuccsessSignup');
-                break;
+            const role = loggedInUser.role;
+            
+            if (role === 'webmaster') {
+              router.replace('/Webmaster/WMAdmin');
+            } else if (role === 'superAdmin') {
+              router.replace('/SuperAdmin/Home');
+            } else if (role === 'leo_member') {
+              router.replace('/Feeds/NationalFeed');
+            } else {
+              router.replace('/Feedbacks/SuccsessSignup');
             }
           } else {
-            // Handle case where user is not returned, e.g., show a generic error
-             router.replace('/Feedbacks/AccNotReg');
+            // Handle case where user is not returned
+            router.replace('/Feedbacks/AccNotReg');
           }
         } catch (error: any) {
           // Check if the error is "not registered"
@@ -153,6 +149,10 @@ const SignupScreen = (): React.JSX.Element => {
       locations={[0.0, 0.5, 1.0]}
       style={styles.container}
     >
+      {/* 💡 FIX 2: Explicitly hide the header for this screen */}
+      <Stack.Screen options={{ headerShown: false }} />
+
+      {/* Set status bar to transparent/translucent for gradient coverage */}
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
       {/* Back Button */}
@@ -212,6 +212,7 @@ const SignupScreen = (): React.JSX.Element => {
 const styles = StyleSheet.create<Style>({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight || 0
   },
 
   backButton: {
@@ -267,7 +268,7 @@ const styles = StyleSheet.create<Style>({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 10,                    
     backgroundColor: COLORS.white,
     paddingVertical: 15,
     paddingHorizontal: 30,
@@ -282,6 +283,13 @@ const styles = StyleSheet.create<Style>({
 
   signInButtonDisabled: {
     opacity: 0.7,
+
+    // Shadows
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
 
   googleIcon: {
@@ -294,7 +302,6 @@ const styles = StyleSheet.create<Style>({
     fontSize: 18,
     fontWeight: '600',
   },
-
   errorText: {
     color: COLORS.errorRed,
     fontSize: 14,
@@ -325,3 +332,20 @@ const styles = StyleSheet.create<Style>({
 } as const);
 
 export default SignupScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

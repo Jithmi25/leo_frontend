@@ -8,6 +8,7 @@ import {
   StyleSheet,
   FlatList,
   Modal,
+  StatusBar
 } from 'react-native';
 import { ArrowLeft, Users, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import CommunityCard from '@/components/Community/CommunityCard';
@@ -206,7 +207,7 @@ export default function CommunityScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <ArrowLeft size={24} color="#1A1A1A" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Community</Text>
@@ -354,6 +355,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingTop: StatusBar.currentHeight || 0
   },
   header: {
     backgroundColor: '#FFFFFF',
@@ -491,3 +493,4 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
 });
+

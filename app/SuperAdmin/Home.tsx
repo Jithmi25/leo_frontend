@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Users, Trophy, ShoppingBag, LayoutDashboard } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.lightGrey,
+        paddingTop: StatusBar.currentHeight || 0
     },
     scrollView: {
         flex: 1,

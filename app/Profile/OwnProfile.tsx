@@ -108,7 +108,7 @@ export default function SetProfileScreen() {
     };
 
     const handleLogout = () => {
-        console.log('Logout');
+        router.replace('/Onboarding');
     };
 
     const renderBadge = (badge: Badge) => (
@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.white,
+        paddingTop: StatusBar.currentHeight || 0
     },
     header: {
         flexDirection: 'row',
@@ -641,3 +642,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
+
+

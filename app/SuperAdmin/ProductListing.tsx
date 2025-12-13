@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Upload, X } from 'lucide-react-native';
@@ -195,6 +196,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingTop: StatusBar.currentHeight || 0
   },
   scrollView: {
     flex: 1,

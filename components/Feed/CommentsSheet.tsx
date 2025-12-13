@@ -1,20 +1,22 @@
-import React, { useState, useRef } from 'react';
+import { Send, X } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
   Image,
-  ViewStyle,
-  TextStyle,
   ImageStyle,
-  Modal,
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from 'react-native';
-import { X, Send } from 'lucide-react-native';
 
 const COLORS = {
   black: '#000000',
@@ -39,6 +41,7 @@ interface CommentsSheetProps {
   onClose: () => void;
   postId: string;
   totalComments: number;
+  onSubmitComment?: (postId: string, commentText: string) => Promise<{ success: boolean; comment?: any; error?: string }>;
 }
 
 interface Style {
@@ -63,6 +66,7 @@ interface Style {
   divider: ViewStyle;
   emptyState: ViewStyle;
   emptyText: TextStyle;
+  loadingContainer: ViewStyle;
 }
 
 const CommentsSheet: React.FC<CommentsSheetProps> = ({
@@ -70,6 +74,7 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
   onClose,
   postId,
   totalComments,
+  onSubmitComment,
 }) => {
   const [comments, setComments] = useState<Comment[]>([
     {
@@ -103,22 +108,86 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
 
   const [newComment, setNewComment] = useState('');
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        commentId: Date.now().toString(),
-        userName: 'You',
-        userAvatarUri:
-          'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-        content: newComment,
-        timestamp: 'now',
-        likes: 0,
-      };
-      setComments([comment, ...comments]);
-      setNewComment('');
-      console.log(`Comment added to post ${postId}`);
+  // Fetch comments from backend when sheet opens
+  useEffect(() => {
+    if (visible && postId) {
+      fetchCommentsFromBackend();
     }
+  }, [visible, postId]);
+
+  const fetchCommentsFromBackend = async () => {
+    try {
+      setIsLoadingComments(true);
+      // You would fetch comments from backend here
+      // Example: const response = await fetch(`/api/posts/${postId}/comments`);
+      // const data = await response.json();
+      // setComments(data.comments);
+      
+      // For now, we'll keep the mock data
+      setTimeout(() => {
+        setIsLoadingComments(false);
+      }, 500);
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+      setIsLoadingComments(false);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim() || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      if (onSubmitComment) {
+        // Call backend API
+        const result = await onSubmitComment(postId, newComment);
+        
+        if (result.success && result.comment) {
+          // Add the new comment from backend
+          const newCommentData: Comment = {
+            commentId: result.comment.commentId || result.comment._id || Date.now().toString(),
+            userName: result.comment.userName || result.comment.user?.fullName || 'You',
+            userAvatarUri: result.comment.userAvatarUri || result.comment.user?.profilePhoto || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
+            content: result.comment.content || result.comment.text,
+            timestamp: 'now',
+            likes: result.comment.likes || 0,
+          };
+          
+          setComments([newCommentData, ...comments]);
+          setNewComment('');
+        } else {
+          // If backend fails, show error and fallback to local
+          Alert.alert('Error', result.error || 'Failed to post comment. Saving locally.');
+          addLocalComment();
+        }
+      } else {
+        // If no backend function provided, use local
+        addLocalComment();
+      }
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+      Alert.alert('Error', 'Network error. Saving comment locally.');
+      addLocalComment();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const addLocalComment = () => {
+    const comment: Comment = {
+      commentId: Date.now().toString(),
+      userName: 'You',
+      userAvatarUri: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
+      content: newComment,
+      timestamp: 'now',
+      likes: 0,
+    };
+    setComments([comment, ...comments]);
+    setNewComment('');
   };
 
   const handleLikeComment = (commentId: string) => {
@@ -129,6 +198,9 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
       newLiked.add(commentId);
     }
     setLikedComments(newLiked);
+    
+    // Here you would call backend to like comment
+    console.log(`Liked comment ${commentId}`);
   };
 
   return (
@@ -161,7 +233,12 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
             showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.commentsContent}
           >
-            {comments.length > 0 ? (
+            {isLoadingComments ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.goldAccent} />
+                <Text style={{ marginTop: 10, color: COLORS.greyText }}>Loading comments...</Text>
+              </View>
+            ) : comments.length > 0 ? (
               comments.map((comment) => (
                 <View key={comment.commentId} style={styles.commentItem}>
                   <Image
@@ -204,6 +281,9 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
             ) : (
               <View style={styles.emptyState}>
                 <Text style={styles.emptyText}>No comments yet</Text>
+                <Text style={[styles.emptyText, { fontSize: 12, marginTop: 5 }]}>
+                  Be the first to comment!
+                </Text>
               </View>
             )}
           </ScrollView>
@@ -219,21 +299,28 @@ const CommentsSheet: React.FC<CommentsSheetProps> = ({
                 value={newComment}
                 onChangeText={setNewComment}
                 multiline
+                maxLength={500}
+                editable={!isSubmitting}
               />
               <TouchableOpacity
                 onPress={handleAddComment}
                 activeOpacity={0.7}
                 style={styles.sendButton}
+                disabled={!newComment.trim() || isSubmitting}
               >
-                <Send
-                  color={
-                    newComment.trim() ? COLORS.goldAccent : COLORS.lightGrey
-                  }
-                  size={20}
-                  fill={
-                    newComment.trim() ? COLORS.goldAccent : COLORS.lightGrey
-                  }
-                />
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" color={COLORS.goldAccent} />
+                ) : (
+                  <Send
+                    color={
+                      newComment.trim() ? COLORS.goldAccent : COLORS.lightGrey
+                    }
+                    size={20}
+                    fill={
+                      newComment.trim() ? COLORS.goldAccent : COLORS.lightGrey
+                    }
+                  />
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -257,7 +344,6 @@ const styles = StyleSheet.create<Style>({
     minHeight: '50%',
     paddingTop: 16,
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -273,12 +359,10 @@ const styles = StyleSheet.create<Style>({
   closeButton: {
     padding: 4,
   },
-
   divider: {
     height: 1,
     backgroundColor: COLORS.borderGrey,
   },
-
   commentsList: {
     flex: 1,
   },
@@ -286,7 +370,6 @@ const styles = StyleSheet.create<Style>({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-
   commentItem: {
     flexDirection: 'row',
     marginBottom: 16,
@@ -325,7 +408,6 @@ const styles = StyleSheet.create<Style>({
     color: COLORS.black,
     lineHeight: 20,
   },
-
   inputContainer: {
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -346,11 +428,13 @@ const styles = StyleSheet.create<Style>({
     fontSize: 14,
     color: COLORS.black,
     paddingVertical: 8,
+    maxHeight: 100,
   } as TextStyle & { maxHeight?: number },
   sendButton: {
     padding: 4,
+    minWidth: 32,
+    alignItems: 'center',
   },
-
   emptyState: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -359,6 +443,11 @@ const styles = StyleSheet.create<Style>({
   emptyText: {
     fontSize: 14,
     color: COLORS.greyText,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
   },
 } as const);
 

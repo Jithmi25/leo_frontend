@@ -1,30 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { isAuthenticated } from '../../services/authService';
 
-const Index = () => {
+const Index = (): React.JSX.Element => {
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuthAndRedirect = async () => {
-      try {
-        const authenticated = await isAuthenticated();
-        if (authenticated) {
-          router.replace('/Feed');
-        } else {
-          router.replace('/Onboarding');
-        }
-      } catch (error) {
-        console.error("Error checking authentication status:", error);
-        // Handle error, maybe navigate to an error screen or Onboarding as a fallback
-        router.replace('/Onboarding');
-      }
-    };
-
-    // Give a small delay to prevent splash screen flickering
-    const timer = setTimeout(checkAuthAndRedirect, 100);
-
+    const timer = setTimeout(() => {
+      router.replace('/Onboarding');
+    }, 100);
     return () => clearTimeout(timer);
   }, [router]);
 

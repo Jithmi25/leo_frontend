@@ -13,21 +13,31 @@ export default function RootLayout() {
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
-          {/* Auth screens */}
+          {/* Auth */}
           <Stack.Screen name="Auth/Signup" />
           <Stack.Screen name="Auth/ChooseAcc" />
-          
-          {/* Main screens based on roles */}
+
+          {/* Main / role-based */}
           <Stack.Screen name="Feed" />
           <Stack.Screen name="Feeds/SearchProfile" />
           <Stack.Screen name="SuperAdmin/Home" />
-          
+
           {/* Onboarding */}
           <Stack.Screen name="Onboarding/index" />
-          
-          {/* Feedback screens */}
+
+          {/* Feedback */}
           <Stack.Screen name="Feedbacks/SuccsessSignup" />
           <Stack.Screen name="Feedbacks/AccNotReg" />
+
+          {/* Tabs and other sections */}
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="Webmaster" />
+
+          {/* Modal overrides header */}
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal', title: 'Modal', headerShown: true }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
