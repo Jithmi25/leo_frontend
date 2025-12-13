@@ -12,6 +12,8 @@ import {
     TextInput,
     Modal,
 } from 'react-native';
+
+const logoImage = require('../../assets/images/logo.png');
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import BottomNav from '@/components/BottomNav'; // Assuming BottomNav.tsx is in the same directory; adjust path if needed
@@ -139,7 +141,11 @@ export default function MarketplaceScreen() {
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={28} color={COLORS.goldMid} />
                 </TouchableOpacity>
-                <Image source={{ uri: LOGO_URL }} style={styles.logoImage} />
+                 <Image
+              source={logoImage} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
                 <View style={styles.headerTextContainer}>
                     <Text style={styles.headerTitle}>LeoConnect</Text>
                     <Text style={styles.headerSubtitle}>SRI LANKA</Text>
@@ -159,7 +165,7 @@ export default function MarketplaceScreen() {
                 <View style={styles.searchInputContainer}>
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="What Are You Looking For?"
+                        placeholder="What R U Looking For?"
                         placeholderTextColor={COLORS.greyText}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -293,11 +299,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: COLORS.borderGrey,
     },
-    logoImage: {
-        width: 40,
-        height: 40,
-        marginLeft: 12,
-    },
+    logo: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+  },
     headerTextContainer: {
         marginLeft: 8,
     },

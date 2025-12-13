@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, StatusBar 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Users, Trophy, ShoppingBag, LayoutDashboard } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router'; // Assuming expo-router is used for navigation
+import { router } from 'expo-router'; 
 
 // --- THEME COLORS ---
 const COLORS = {
@@ -21,20 +21,19 @@ const COLORS = {
 };
 
 // Placeholder for the logo image
-const logoImage = {
-    uri: 'https://placehold.co/100x100/FFC72C/000?text=LOGO',
-};
+const logoImage = require('../../assets/images/logo.png');
 
 export default function SuperAdminHomeScreen() {
     const handleNavigate = (screen: string) => {
         console.log('Navigate to:', screen);
-        
-        // In a real app, you would use router.push(screen)
         // router.push(screen);
     };
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
+            {/* Status Bar Configuration */}
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+
             {/* --- TOP HEADER (Logo and Profile) --- */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
@@ -187,11 +186,12 @@ export default function SuperAdminHomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.lightGrey,
-        paddingTop: StatusBar.currentHeight || 0
+        backgroundColor: COLORS.white, // Changed to white to match header
+        // REMOVED: paddingTop: StatusBar.currentHeight || 0  <-- This was causing the double gap
     },
     scrollView: {
         flex: 1,
+        backgroundColor: COLORS.lightGrey, // Keep content background grey
     },
     // NEW LOGO/PROFILE HEADER STYLES
     header: {
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         marginRight: 8,
-        borderRadius: 8, // Optional: for a subtle rounded look on the logo
+        borderRadius: 8,
     },
     appNameContainer: {
         justifyContent: 'center',
@@ -229,9 +229,7 @@ const styles = StyleSheet.create({
         letterSpacing: 1.5,
         marginTop: -3,
     },
-    profileButton: {
-        // Shadow/elevation can be added here if desired
-    },
+    profileButton: {},
     profileImage: {
         width: 40,
         height: 40,
@@ -239,8 +237,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: COLORS.goldMid,
     },
-    // END NEW LOGO/PROFILE HEADER STYLES
-
     // DASHBOARD TITLE SECTION
     dashboardTitleSection: {
         paddingHorizontal: 16,
@@ -275,7 +271,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 16,
         overflow: 'hidden',
-        // Subtle shadow for lift
         shadowColor: COLORS.black,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
@@ -293,7 +288,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.1)', // Light background for gold gradient icons
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -303,12 +298,12 @@ const styles = StyleSheet.create({
     shortcutTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: COLORS.darkText, // Default to dark text
+        color: COLORS.darkText,
         marginBottom: 4,
     },
     shortcutDescription: {
         fontSize: 12,
-        color: COLORS.greyText, // Default to grey text
+        color: COLORS.greyText,
         fontWeight: '500',
     },
     // STATS SECTION
@@ -333,7 +328,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        gap: 12, // Use gap for consistency
+        gap: 12,
     },
     statCard: {
         width: '48%',
@@ -348,7 +343,6 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 26,
         fontWeight: '700',
-        // Color is overridden inline to use goldMid
         marginBottom: 4,
     },
     statLabel: {

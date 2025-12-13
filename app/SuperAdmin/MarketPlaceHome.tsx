@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Plus, Search } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+
 interface Product {
   id: string;
   title: string;
@@ -54,14 +54,19 @@ export default function MarketplaceHomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
+      
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <ChevronLeft color="#000000" size={24} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Marketplace</Text>
-          <TouchableOpacity style={styles.addButton} activeOpacity={0.8} 
-                    onPress={() => router.push('/SuperAdmin/ProductListing')}>
+          <TouchableOpacity 
+            style={styles.addButton} 
+            activeOpacity={0.8} 
+            onPress={() => router.push('/SuperAdmin/ProductListing')}
+          >
             <Plus color="#FFD700" size={24} />
           </TouchableOpacity>
         </View>
@@ -120,7 +125,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: StatusBar.currentHeight || 0
+    // REMOVED: paddingTop: StatusBar.currentHeight || 0
   },
   scrollView: {
     flex: 1,
@@ -187,15 +192,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 16,
-    gap: 12,
+    gap: 12, // Note: 'gap' works in newer React Native versions. If layout breaks, use margins.
   },
   productCard: {
-    width: '48%',
+    width: '48%', // Adjusted slightly to ensure 2 fit with gap
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E0E0E0',
+    marginBottom: 12, // Added margin bottom for vertical spacing
   },
   productImage: {
     width: '100%',

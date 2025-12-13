@@ -46,9 +46,12 @@ export default function CreateProductListingScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Added StatusBar to ensure icons are dark and background matches */}
+      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
+      
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <ChevronLeft color="#000000" size={24} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>List Product</Text>
@@ -196,7 +199,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: StatusBar.currentHeight || 0
+    // REMOVED: paddingTop: StatusBar.currentHeight || 0
   },
   scrollView: {
     flex: 1,
