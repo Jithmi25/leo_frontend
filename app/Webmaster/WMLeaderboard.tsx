@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
     View,
@@ -9,13 +9,10 @@ import {
     SafeAreaView,
     ScrollView,
     Image,
-<<<<<<< HEAD
     ActivityIndicator,
     RefreshControl,
     FlatList,
-=======
     Dimensions,
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -128,20 +125,24 @@ const CLUBS_LIST: Club[] = [
         engagementChange: 0.8,
     },
     {
-        rank: 4,
+        id: 'club-5',
         name: 'Leo Club of Moratuwa',
+        district: '306D02',
+        memberCount: 38,
+        postCount: 220,
         postChange: 2,
-        postCount: 12,
+        engagementScore: 76.2,
         engagementChange: 1.5,
-        logoUri: 'https://placehold.co/60x60/2196F3/FFF?text=LM',
     },
     {
-        rank: 5,
+        id: 'club-6',
         name: 'Leo Club of Piliyandala',
+        district: '306D02',
+        memberCount: 35,
+        postCount: 198,
         postChange: 0,
-        postCount: 3,
+        engagementScore: 73.8,
         engagementChange: 0,
-        logoUri: 'https://placehold.co/60x60/4CAF50/FFF?text=LP',
     },
 ];
 
@@ -343,7 +344,6 @@ export default function WMLeaderboardScreen() {
                         <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                             <Ionicons name="arrow-back" size={24} color={COLORS.goldMid} />
                         </TouchableOpacity>
-<<<<<<< HEAD
                         <Text style={styles.headerTitle}>Leaderboard</Text>
                         <View style={styles.timeRangeContainer}>
                             {(['week', 'month', 'all'] as const).map(range => (
@@ -364,11 +364,9 @@ export default function WMLeaderboardScreen() {
                                 </TouchableOpacity>
                             ))}
                         </View>
-=======
                         <Text style={styles.headerTitle}>Leader Board</Text>
                         {/* Placeholder for symmetry or extra icon */}
                         <View style={{ width: 24 }} />
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
                     </View>
 
                     {/* Districts Section Header */}
@@ -377,7 +375,6 @@ export default function WMLeaderboardScreen() {
                         <Text style={styles.sectionSubtitle}>{timeLabel}</Text>
                     </View>
 
-<<<<<<< HEAD
                     {/* Districts List */}
                     <ScrollView 
                         horizontal 
@@ -386,15 +383,14 @@ export default function WMLeaderboardScreen() {
                     >
                         {districts.map((district, idx) => renderDistrictCard(district, idx))}
                     </ScrollView>
-=======
                     {/* Districts List (Top Section) */}
                     <View style={styles.districtsList}>
                         {DISTRICTS_LIST.map(renderDistrictRow)}
                     </View>
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
                 </SafeAreaView>
 
-<<<<<<< HEAD
+            </ScrollView>
+
             {/* Clubs Section */}
             <ScrollView
                 style={styles.clubsSection}
@@ -417,7 +413,6 @@ export default function WMLeaderboardScreen() {
                 {clubs.map(renderClubCard)}
 
                 <View style={{ height: 20 }} />
-=======
                 {/* --- BOTTOM SECTION (White Card) --- */}
                 {/* This card is inside the ScrollView, so it pushes up as you scroll */}
                 <View style={styles.whiteCard}>
@@ -430,7 +425,6 @@ export default function WMLeaderboardScreen() {
                         <Ionicons name="chevron-down" size={24} color={COLORS.darkText} />
                     </TouchableOpacity>
                 </View>
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
             </ScrollView>
         </LinearGradient>
     );
@@ -439,13 +433,10 @@ export default function WMLeaderboardScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-<<<<<<< HEAD
         backgroundColor: COLORS.white,
     },
     fullScreen: {
         flex: 1,
-=======
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
     },
     scrollView: {
         flex: 1,
@@ -460,12 +451,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-<<<<<<< HEAD
         paddingVertical: 12,
-=======
         paddingTop: 16,
         paddingBottom: 20,
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
     },
     headerTitle: {
         flex: 1,
@@ -504,14 +492,16 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: COLORS.white,
     },
-<<<<<<< HEAD
     sectionSubtitle: {
         fontSize: 12,
         color: 'rgba(255, 255, 255, 0.7)',
         marginTop: 2,
     },
     districtsScroll: {
-=======
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        gap: 12,
+    },
     // PODIUM
     podiumContainer: {
         flexDirection: 'row',
@@ -576,7 +566,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent or stick to lightGrey
         borderRadius: 12,
         paddingVertical: 12,
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
         paddingHorizontal: 12,
     },
     districtCard: {
@@ -647,7 +636,6 @@ const styles = StyleSheet.create({
         color: '#4CAF50',
         fontWeight: '700',
     },
-<<<<<<< HEAD
     clubsSection: {
         flex: 1,
     },
@@ -670,7 +658,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: COLORS.greyText,
         fontStyle: 'italic',
-=======
+    },
     // WHITE CARD SECTION
     whiteCard: {
         backgroundColor: COLORS.white,
@@ -687,7 +675,6 @@ const styles = StyleSheet.create({
         color: COLORS.darkText,
         marginBottom: 16,
         marginLeft: 4,
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
     },
     clubCard: {
         flexDirection: 'row',
@@ -740,7 +727,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: COLORS.greyText,
     },
-<<<<<<< HEAD
     changeIndicator: {
         marginTop: 8,
         paddingHorizontal: 8,
@@ -772,11 +758,11 @@ const styles = StyleSheet.create({
         marginTop: 12,
         fontSize: 16,
         color: COLORS.white,
-=======
+    },
     loadMoreButton: {
         alignSelf: 'center',
         padding: 12,
         marginTop: 8,
->>>>>>> 5835698c0745fda58bac4449200cfe35aa3e0847
     },
 });
+
